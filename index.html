@@ -1,0 +1,2990 @@
+<!DOCTYPE html>
+<html class="light" dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Computer Graphics</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <!-- KaTeX CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed-dim": "#87d3d3", "outline": "#6f7979", "tertiary-fixed": "#bbebeb",
+            "surface-bright": "#f7fafa", "surface-container-low": "#f1f4f4", "on-primary": "#ffffff",
+            "inverse-on-surface": "#eef1f1", "on-surface-variant": "#3f4948", "on-error": "#ffffff",
+            "secondary-container": "#fdd49a", "primary": "#3D8B8B", "tertiary-container": "#4f7c7c",
+            "tertiary-fixed-dim": "#a0cfcf", "tertiary": "#366363", "surface-container-highest": "#e0e3e3",
+            "primary-fixed": "#a3f0ef", "on-primary-fixed": "#002020", "inverse-primary": "#87d3d3",
+            "on-primary-container": "#f3fffe", "background": "#f7fafa", "surface-tint": "#0d6969",
+            "error": "#ba1a1a", "on-background": "#181c1d", "primary-container": "#308080",
+            "on-tertiary-container": "#f3fffe", "surface-variant": "#e0e3e3", "on-secondary": "#ffffff",
+            "secondary": "#77592b", "outline-variant": "#bec9c8", "inverse-surface": "#2d3131",
+            "on-secondary-container": "#785a2b", "secondary-fixed-dim": "#e8c088",
+            "surface-dim": "#d7dbdb", "on-surface": "#181c1d", "on-error-container": "#93000a",
+            "secondary-fixed": "#ffddb0", "surface-container-lowest": "#ffffff", "surface": "#f7fafa",
+            "surface-container": "#ebeeee", "on-tertiary": "#ffffff", "error-container": "#ffdad6",
+            "surface-container-high": "#e6e9e9"
+          },
+          fontFamily: {
+            headline: ["IBM Plex Sans Arabic", "Manrope", "sans-serif"],
+            body: ["IBM Plex Sans Arabic", "Inter", "sans-serif"],
+            label: ["IBM Plex Sans Arabic", "Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 }
+    
+    body {
+      background-color: #f7fafa;
+      background-image: radial-gradient(at 0% 0%, rgba(61, 139, 139, .03) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(197, 160, 107, .03) 0px, transparent 50%);
+      transition: background-color .4s, color .4s;
+      overflow-x: hidden
+    }
+    
+    .dark body, .dark { background-color: #181c1c; color: #e0e3e3 }
+    .dark body { background-image: radial-gradient(at 0% 0%, rgba(135, 211, 211, .05) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(232, 192, 136, .05) 0px, transparent 50%) }
+    
+    .editorial-shadow { box-shadow: 0 10px 30px rgba(7, 103, 103, .04) }
+    .dark .editorial-shadow { box-shadow: 0 10px 30px rgba(0, 0, 0, .3) }
+    .dark .dark\:bg-d { background: #0b0f0f }
+    .dark .dark\:bg-card { background: #1e2222 }
+    .dark .dark\:border-db { border-color: #323636 }
+    .dark .dark\:text-p { color: #87d3d3 }
+    .dark .dark\:text-s { color: #e8c088 }
+    .dark .dark\:text-sv { color: #bfc8c8 }
+    .dark .dark\:bg-sc { background: #282b2b }
+    .dark .dark\:bg-scl { background: #1c2020 }
+    
+    .bg-shapes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden }
+    .bg-shape { position: absolute; border-radius: 50%; opacity: .035 }
+    .dark .bg-shape { opacity: .04 }
+    
+    @keyframes drift1 {
+      0% { transform: translate(0, 0) scale(1) }
+      25% { transform: translate(60px, -40px) scale(1.1) }
+      50% { transform: translate(-30px, 70px) scale(.95) }
+      75% { transform: translate(40px, 30px) scale(1.05) }
+      100% { transform: translate(0, 0) scale(1) }
+    }
+    @keyframes drift2 {
+      0% { transform: translate(0, 0) rotate(0deg) }
+      33% { transform: translate(-50px, 40px) rotate(120deg) }
+      66% { transform: translate(30px, -60px) rotate(240deg) }
+      100% { transform: translate(0, 0) rotate(360deg) }
+    }
+    @keyframes drift3 {
+      0% { transform: translate(0, 0) scale(1) }
+      50% { transform: translate(70px, 50px) scale(1.15) }
+      100% { transform: translate(0, 0) scale(1) }
+    }
+    
+    .bg-s1 { width: 400px; height: 400px; top: 10%; left: -5%; background: #3D8B8B; animation: drift1 25s ease-in-out infinite }
+    .bg-s2 { width: 300px; height: 300px; top: 60%; right: -3%; background: #e8c088; animation: drift2 30s linear infinite }
+    .bg-s3 { width: 250px; height: 250px; top: 30%; left: 50%; background: #87d3d3; animation: drift3 20s ease-in-out infinite; border-radius: 30% }
+    .bg-s4 { width: 180px; height: 180px; bottom: 15%; left: 20%; background: #3D8B8B; animation: drift1 22s ease-in-out infinite reverse }
+    .bg-s5 { width: 220px; height: 220px; top: 5%; right: 25%; background: #e8c088; animation: drift3 28s ease-in-out infinite; border-radius: 40% }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px) }
+      to { opacity: 1; transform: translateY(0) }
+    }
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+    
+    .animate-fade-up { animation: fadeUp .5s ease both }
+    .animate-fade-in { animation: fadeIn .3s ease both }
+    
+    .q-card { transition: all .3s cubic-bezier(.4, 0, .2, 1) }
+    .q-card:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(7, 103, 103, .08) }
+    .dark .q-card:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, .4) }
+    
+    .option-label { transition: all .2s ease }
+    .option-label:hover { transform: translateX(4px); background: rgba(61, 139, 139, .04) }
+    .dark .option-label:hover { background: rgba(135, 211, 211, .06) !important }
+    
+    .correct-answer { border-color: #3D8B8B !important; background: rgba(61, 139, 139, .06) !important }
+    .dark .correct-answer { background: rgba(135, 211, 211, .08) !important; border-color: #87d3d3 !important }
+    .incorrect-answer { border-color: #ba1a1a !important; background: rgba(186, 26, 26, .06) !important }
+    
+    .exp-box { 
+      display: none; 
+      margin-top: 0; 
+      padding: 1.5rem; 
+      background: rgba(197, 160, 107, .08); 
+      border: 1px dashed rgba(197, 160, 107, .4); 
+      border-radius: 1.25rem; 
+      animation: fadeUp .3s ease both;
+      position: relative;
+    }
+    .dark .exp-box { background: rgba(232, 192, 136, .05); border-color: rgba(232, 192, 136, .25) }
+    .exp-visible { display: block !important }
+    
+    .q-image-container {
+      margin: 1rem 0;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(61, 139, 139, 0.15);
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    .dark .q-image-container {
+      background: #1e2222;
+      border-color: rgba(135, 211, 211, 0.15);
+    }
+    .q-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      max-height: 300px;
+    }
+    .q-image-caption {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      color: #6f7979;
+      text-align: center;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      background: rgba(61, 139, 139, 0.02);
+    }
+    .dark .q-image-caption {
+      color: #bfc8c8;
+      border-top-color: rgba(255,255,255,0.05);
+      background: rgba(135, 211, 211, 0.03);
+    }
+    
+    .lang-toggle {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: inline-flex;
+      background: rgba(255,255,255,0.6);
+      border-radius: 9999px;
+      padding: 0.25rem;
+      gap: 0.25rem;
+      border: 1px solid rgba(197, 160, 107, 0.3);
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+    .dark .lang-toggle {
+      background: rgba(30, 34, 34, 0.8);
+      border-color: rgba(232, 192, 136, 0.2);
+    }
+    .lang-btn {
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      background: transparent;
+      color: #77592b;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+    .dark .lang-btn { color: #e8c088; }
+    .lang-btn.active {
+      background: #77592b;
+      color: white;
+      box-shadow: 0 2px 8px rgba(119, 89, 43, 0.3);
+    }
+    .dark .lang-btn.active {
+      background: #e8c088;
+      color: #1e2222;
+      box-shadow: 0 2px 8px rgba(232, 192, 136, 0.3);
+    }
+    .lang-btn:hover:not(.active) {
+      background: rgba(197, 160, 107, 0.2);
+    }
+    
+    .exp-text { display: none; animation: fadeIn 0.3s ease; }
+    .exp-text.active { display: block; }
+    
+    .reveal-content { display: none; margin-top: 0.25rem; }
+    
+    .btn-reveal {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease;
+      margin-top: 0.75rem;
+      cursor: pointer;
+    }
+    .btn-reveal-exp { background: rgba(61, 139, 139, 0.1); color: #3D8B8B; }
+    .dark .btn-reveal-exp { background: rgba(135, 211, 211, 0.1); color: #87d3d3; }
+    .btn-reveal-correct { background: rgba(197, 160, 107, 0.1); color: #77592b; }
+    .dark .btn-reveal-correct { background: rgba(232, 192, 136, 0.1); color: #e8c088; }
+    .btn-reveal:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    
+    /* KaTeX specific styling */
+    .katex { font-size: 1.1em; }
+    .option-label .katex { font-size: 1.05em; }
+    
+    .progress-glow { animation: pulse-glow 2s ease-in-out infinite }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 8px rgba(61, 139, 139, .2) }
+      50% { box-shadow: 0 0 20px rgba(61, 139, 139, .4) }
+    }
+    
+    .btn-press { transition: all .15s ease }
+    .btn-press:active { transform: scale(.96) }
+    
+    .slide-item { transition: all .25s ease }
+    .slide-item:hover { background: rgba(61, 139, 139, .04) }
+    .dark .slide-item:hover { background: rgba(135, 211, 211, .06) }
+    .slide-item.active-slide { background: rgba(61, 139, 139, .08); border-color: #3D8B8B !important }
+    .dark .slide-item.active-slide { background: rgba(135, 211, 211, .1); border-color: #87d3d3 !important }
+    
+    .pdf-viewer { min-height: 70vh; border-radius: 1.5rem; overflow: hidden }
+    .pdf-frame { width: 100%; height: 70vh; border: none }
+    
+    ::-webkit-scrollbar { width: 6px }
+    ::-webkit-scrollbar-track { background: transparent }
+    ::-webkit-scrollbar-thumb { background: #bec9c8; border-radius: 3px }
+    .dark ::-webkit-scrollbar-thumb { background: #3f4948 }
+    
+    .animate-pray { animation: pray-glow 3s ease-in-out infinite }
+    @keyframes pray-glow {
+      0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0px rgba(61, 139, 139, 0)) }
+      50% { transform: scale(1.08) translateY(-4px); filter: drop-shadow(0 4px 12px rgba(61, 139, 139, .3)) }
+    }
+    .animate-twinkle { animation: twinkle 3s ease-in-out infinite }
+    @keyframes twinkle {
+      0%, 100% { opacity: .6; transform: scale(1) }
+      50% { opacity: 1; transform: scale(1.15) }
+    }
+  </style>
+</head>
+
+<body class="font-body text-on-surface antialiased">
+
+  <div class="bg-shapes">
+    <div class="bg-shape bg-s1"></div>
+    <div class="bg-shape bg-s2"></div>
+    <div class="bg-shape bg-s3"></div>
+    <div class="bg-shape bg-s4"></div>
+    <div class="bg-shape bg-s5"></div>
+  </div>
+
+  <header id="main-header" class="bg-white/80 dark:bg-card backdrop-blur-md sticky top-0 z-50 border-b border-surface-container-highest dark:border-db transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-0 md:h-20 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0 relative">
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <span class="text-lg md:text-xl font-bold text-primary dark:text-p font-headline tracking-tight">Computer Graphics • Final</span>
+        <div class="flex items-center gap-2 md:hidden">
+          <button onclick="resetQuiz()" class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-error rounded-full text-xs font-bold btn-press">
+            <span class="material-symbols-outlined text-sm">restart_alt</span>Reset
+          </button>
+          <button onclick="toggleTheme()" id="themeToggleMobile" class="p-2 text-on-surface-variant dark:text-sv rounded-full btn-press">
+            <span class="material-symbols-outlined text-xl">dark_mode</span>
+          </button>
+        </div>
+      </div>
+      <nav class="flex items-center gap-1 bg-surface-container-low dark:bg-scl p-1 rounded-full w-full md:w-auto md:absolute md:left-1/2 md:-translate-x-1/2">
+        <button onclick="showSection('quiz')" id="nav-quiz" class="nav-tab flex-1 md:flex-none px-4 md:px-6 py-2 bg-white dark:bg-card shadow-sm rounded-full text-primary dark:text-p font-bold text-xs md:text-sm flex justify-center items-center gap-2 btn-press transition-all">
+          <span class="material-symbols-outlined text-base md:text-lg">quiz</span><span>الامتحان</span>
+        </button>
+        <button onclick="showSection('slides')" id="nav-slides" class="nav-tab flex-1 md:flex-none px-4 md:px-6 py-2 rounded-full text-on-surface-variant dark:text-sv hover:text-primary font-medium text-xs md:text-sm flex justify-center items-center gap-2 btn-press transition-all">
+          <span class="material-symbols-outlined text-base md:text-lg">menu_book</span><span>سلايدات المادة</span>
+        </button>
+      </nav>
+      <div class="hidden md:flex items-center gap-3">
+        <button onclick="resetQuiz()" class="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-error hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full text-xs font-bold btn-press transition-all">
+          <span class="material-symbols-outlined text-sm">restart_alt</span>Reset Quiz
+        </button>
+        <div class="w-px h-6 bg-outline-variant/30 mx-1"></div>
+        <button onclick="toggleTheme()" id="themeToggleDesktop" class="p-2.5 text-on-surface-variant dark:text-sv hover:bg-surface-container dark:hover:bg-sc rounded-full btn-press transition-all">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="min-h-screen pb-10">
+    <main id="quiz-section" class="w-full max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10">
+      <section class="mb-8 md:mb-10 animate-fade-up">
+        <div class="flex flex-col items-center text-center gap-6 mb-12">
+          <h1 class="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-on-surface dark:text-white tracking-tighter">Final Computer Graphics</h1>
+          <div class="flex flex-col items-center gap-3 w-full max-w-sm md:max-w-md">
+            <div class="flex items-center justify-between w-full px-1">
+              <span class="font-label text-xs md:text-sm font-bold text-secondary dark:text-s uppercase tracking-widest text-[#3D8B8B]">Progress</span>
+              <span class="font-label text-xs md:text-sm font-bold text-primary dark:text-p">
+                <span id="answered-count">0</span> / <span id="total-count">0</span> <span class="hidden sm:inline">Answered</span>
+              </span>
+            </div>
+            <div class="w-full h-3 bg-surface-container-highest dark:bg-sc rounded-full overflow-hidden shadow-inner p-[2px] border border-outline-variant/10 dark:border-db">
+              <div id="progress-bar" class="h-full w-0 bg-gradient-to-r from-[#3D8B8B] to-[#5DB1B1] rounded-full progress-glow transition-all duration-1000 ease-out"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 p-2 bg-surface-container-low dark:bg-scl rounded-2xl w-full md:w-fit">
+          <button onclick="showAllAnswers()" class="flex-1 md:flex-none px-5 py-2.5 bg-primary dark:bg-primary-fixed-dim text-white dark:text-on-primary-fixed rounded-xl font-label text-sm font-semibold shadow-md hover:opacity-90 btn-press transition-all">Show Answers</button>
+          <button onclick="hideAllAnswers()" class="flex-1 md:flex-none px-5 py-2.5 bg-white dark:bg-card text-on-surface-variant dark:text-sv border border-outline-variant/10 dark:border-db rounded-xl font-label text-sm font-semibold hover:bg-surface-bright btn-press transition-all">Hide Answers</button>
+        </div>
+      </section>
+      <div id="questions-container" class="space-y-4 md:space-y-6"></div>
+    </main>
+
+    <section id="slides-section" class="w-full max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-10 hidden">
+      <h1 class="font-headline text-2xl md:text-3xl font-extrabold text-on-surface dark:text-white tracking-tight mb-8 animate-fade-up">سلايدات المادة</h1>
+      <div class="space-y-2 mb-8" id="slides-list"></div>
+      <div id="pdf-viewer-wrap" class="hidden md:block">
+        <div class="pdf-viewer bg-white dark:bg-card editorial-shadow border border-surface-container-high dark:border-db overflow-hidden rounded-[1.5rem] md:rounded-[2rem]">
+          <div class="flex items-center justify-between px-6 py-4 bg-primary dark:bg-primary-container text-white">
+            <span id="pdf-title" class="font-headline font-bold text-lg">Computer Graphics Slides</span>
+            <div class="flex gap-2">
+              <button onclick="downloadCurrentPdf()" class="px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold btn-press transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-base">download</span>Download
+              </button>
+            </div>
+          </div>
+          <iframe id="pdf-frame" class="pdf-frame" src=""></iframe>
+        </div>
+      </div>
+    </section>
+
+    <footer class="w-full py-12 md:py-16 mt-8">
+      <div class="max-w-3xl mx-auto px-6 text-center">
+        <div class="bg-white/60 dark:bg-card backdrop-blur-xl rounded-[2rem] p-8 md:p-12 editorial-shadow border border-surface-container-high dark:border-db">
+          <div class="mb-5"><span class="material-symbols-outlined text-5xl md:text-6xl text-primary dark:text-primary-fixed-dim animate-pray" style="font-variation-settings:'FILL' 1,'wght' 400">volunteer_activism</span></div>
+          <p class="font-headline text-xl md:text-2xl font-bold text-on-surface dark:text-white leading-relaxed mb-3 animate-fade-up">دعواتكم للمساعد الخفي والعاملين على الموقع</p>
+          <p class="font-headline text-lg md:text-xl font-semibold text-primary dark:text-primary-fixed-dim animate-fade-up" style="animation-delay:.15s">بالتوفيق والسداد والزوجة الصالحة</p>
+          <div class="flex justify-center items-center gap-2 mt-6 opacity-50"><span class="animate-twinkle" style="animation-delay:0s">✦</span><span class="animate-twinkle" style="animation-delay:.4s">✦</span><span class="animate-twinkle" style="animation-delay:.8s">✦</span></div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- KaTeX JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <script>
+    const quizData = [
+  {
+    "n": 1,
+    "q": "In the conversion from cartesian coordinates \\((x, y, z)\\) to cylindrical coordinates \\((\\rho, \\phi, z')\\), what is the correct expression for \\(\\rho\\)?",
+    "opts": [
+      "\\(\\rho = x^2 + y^2\\)",
+      "\\(\\rho = \\sqrt{x^2 + y^2}\\)",
+      "\\(\\rho = \\sqrt{x^2 + y^2 + z^2}\\)",
+      "\\(\\rho = \\tan^{-1}(y/x)\\)"
+    ],
+    "ans": "b",
+    "page": 1,
+    "exp": {
+      "en": "The cylindrical coordinate \\(\\rho\\) represents the radial distance from the z-axis in the xy-plane, given by \\(\\rho = \\sqrt{x^2 + y^2}\\).\nIncorrect:\n- (a) is missing the square root.\n- (c) represents the radial distance \\(r\\) in spherical coordinates (distance from the origin in 3D).\n- (d) represents the azimuthal angle \\(\\phi = \\tan^{-1}(y/x)\\).",
+      "ar": "هنا، يمثل المتغير \\(\\rho\\) في الإحداثيات الأسطوانية المسافة القطرية من محور z في مستوي xy، ويعبر عنه بالقانون \\(\\rho = \\sqrt{x^2 + y^2}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 2,
+    "q": "In the DDA line algorithm, when \\(|\\Delta x| \\ge |\\Delta y|\\), what step increment is chosen?",
+    "opts": [
+      "\\(\\Delta y = 1\\)",
+      "\\(\\Delta x = 0\\)",
+      "\\(\\Delta x = 1\\)",
+      "\\(\\Delta y = \\Delta x\\)"
+    ],
+    "ans": "c",
+    "page": 1,
+    "exp": {
+      "en": "In the Digital Differential Analyzer (DDA) line drawing algorithm, if the horizontal change is greater than or equal to the vertical change (\\(|\\Delta x| \\ge |\\Delta y|\\)), the line is closer to horizontal. Thus, we increment \\(x\\) by a step size of 1 unit (i.e., \\(\\Delta x = 1\\)) and calculate the corresponding fractional change in \\(y\\).\nIncorrect:\n- (a) is chosen when the line is steeper (\\(|\\Delta y| > |\\Delta x|\\)).\n- (b) would mean no progress along the x-axis, creating a vertical line.\n- (d) is not a standard step increment choice.",
+      "ar": "هذا يعني أنه في خوارزمية DDA لرسم الخطوط، عندما يكون التغير الأفقي أكبر من أو يساوي التغير الرأسي (\\(|\\Delta x| \\ge |\\Delta y|\\))، يكون الخط مائلاً أكثر نحو الأفق، وبالتالي نتحرك خطوة بمقدار وحدة واحدة على المحور الأفقي (\\(\\Delta x = 1\\))."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 3,
+    "q": "In the integer Bresenham’s line algorithm (first octant), the initial error term \\(\\bar{c}\\) is set to which value?",
+    "opts": [
+      "\\(2\\Delta y - \\Delta x\\)",
+      "\\(\\Delta y / \\Delta x - 1/2\\)",
+      "\\(2\\Delta x - \\Delta y\\)",
+      "\\(\\Delta x - 2\\Delta y\\)"
+    ],
+    "ans": "a",
+    "page": 1,
+    "exp": {
+      "en": "In the integer-only Bresenham's line algorithm for the first octant, the initial decision parameter (error term) \\(P_0\\) (or \\(c_0\\)) is derived from scaling the real error term \\(m - 1/2\\) (where slope \\(m = \\Delta y / \\Delta x\\)) by \\(2\\Delta x\\) to avoid floats, resulting in \\(2\\Delta y - \\Delta x\\).\nIncorrect:\n- (b) is the floating-point version of the initial decision parameter, which contains division.\n- (c) and (d) are incorrect algebraic arrangements that do not match the algorithm's derivation.",
+      "ar": "هنا، يتم ضبط قيمة حد الخطأ الابتدائي \\(c\\) (أو متغير القرار الأول) في خوارزمية بريزنهام للخطوط إلى القيمة \\(2\\Delta y - \\Delta x\\)، وذلك لتجنب استخدام الأعداد العشرية أو الكسور وتسريع الحسابات."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 4,
+    "q": "In the generalized Bresenham’s algorithm, what action is taken when \\(\\Delta y > \\Delta x\\)?",
+    "opts": [
+      "No action is taken, the algorithm continues normally",
+      "\\(\\Delta x\\) and \\(\\Delta y\\) are swapped and an exchange flag is set",
+      "The line drawing is aborted",
+      "The start and end points are swapped"
+    ],
+    "ans": "b",
+    "page": 1,
+    "exp": {
+      "en": "In the generalized Bresenham's algorithm (which handles all octants), if the slope is steep (\\(\\Delta y > \\Delta x\\)), \\(\\Delta x\\) and \\(\\Delta y\\) are swapped, and an exchange flag is set. This rotates the coordinate frame so that the algorithm can execute its standard first-octant logic, swapping the coordinates back during plotting.\nIncorrect:\n- (a) is wrong because steep lines are valid and drawn, not rejected.\n- (c) is wrong because the algorithm continues to draw the line.\n- (d) is wrong because inverting the signs is used to handle negative directions, not steep slopes.",
+      "ar": "هذا يعني أنه إذا كان الخط شديد الانحدار (\\(\\Delta y > \\Delta x\\))، تقوم الخوارزمية بتبديل قيم \\(\\Delta x\\) و \\(\\Delta y\\) وتفعيل علم التبادل (exchange flag) لمحاكاة الرسم في الثمن الأول، ومن ثم عكس التبديل عند وضع النقاط على الشاشة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 5,
+    "q": "In Bresenham’s circle algorithm, the initial decision parameter \\(\\Delta_1\\) for a circle of radius \\(r\\) is given by:",
+    "opts": [
+      "\\(3 - 2r\\)",
+      "\\(2r - 3\\)",
+      "\\(5/4 - r\\)",
+      "\\(1 - r\\)"
+    ],
+    "ans": "a",
+    "page": 1,
+    "exp": {
+      "en": "In Bresenham's circle algorithm, the initial decision parameter \\(P_0\\) (or \\(D_0\\)) for a circle of integer radius \\(r\\) is set to \\(3 - 2r\\) to evaluate if the next pixel should be horizontal or diagonal.\nIncorrect:\n- (b) is an incorrect sign configuration.\n- (c) is the initial decision parameter used in the Midpoint Circle Algorithm before integer simplification.\n- (d) is the simplified integer version of the Midpoint Circle Algorithm's parameter, not Bresenham's.",
+      "ar": "هنا، يتم تحديد قيمة متغير القرار الابتدائي \\(P_0\\) في خوارزمية بريزنهام لرسم الدائرة بالقيمة \\(3 - 2r\\) (حيث \\(r\\) هو نصف القطر) لتحديد اتجاه رسم البكسل التالي."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 6,
+    "q": "In the midpoint circle algorithm, the initial decision factor \\(M_0\\) or \\(M_1\\) is often simplified to:",
+    "opts": [
+      "\\(3 - 2r\\)",
+      "\\(5/4 - r\\)",
+      "\\(1 - r\\)",
+      "\\(2r - 5/4\\)"
+    ],
+    "ans": "c",
+    "page": 1,
+    "exp": {
+      "en": "In the midpoint circle algorithm, the initial decision parameter is \\(5/4 - r\\). For integer coordinates, this is frequently simplified to \\(1 - r\\) because the fractional \\(1/4\\) does not affect the decision threshold (since all other coordinate terms are integers).\nIncorrect:\n- (a) is the initial parameter for Bresenham's circle algorithm.\n- (b) is the exact unsimplified floating-point initial parameter.\n- (d) is an incorrect configuration.",
+      "ar": "هذا يعني أنه في خوارزمية نقطة المنتصف لرسم الدائرة، يتم تبسيط قيمة متغير القرار الابتدائي من القيمة الكسرية \\(5/4 - r\\) إلى الصيغة الصحيحة الأكثر كفاءة وهي \\(1 - r\\)، لأن ربع القيمة لا يغير من نتيجة المقارنة عند التعامل مع أعداد صحيحة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 7,
+    "q": "When converting from spherical coordinates \\((r, \\theta, \\phi)\\) to cylindrical coordinates \\((\\rho, \\phi', z')\\), which relation is correct?",
+    "opts": [
+      "\\(\\rho = r \\cos \\theta\\)",
+      "\\(\\rho = r \\sin \\theta\\)",
+      "\\(\\rho = r \\tan \\theta\\)",
+      "\\(\\phi = r / \\sin \\theta\\)"
+    ],
+    "ans": "b",
+    "page": 2,
+    "exp": {
+      "en": "In spherical coordinates, \\(\\theta\\) is the polar angle (angle down from the positive z-axis). Therefore, the projection of the radial distance \\(r\\) onto the xy-plane (which is the cylindrical radius \\(\\rho\\)) is given by \\(\\rho = r \\sin \\theta\\).\nIncorrect:\n- (a) represents the z-coordinate: \\(z = r \\cos \\theta\\).\n- (c) and (d) are mathematically incorrect conversions.",
+      "ar": "هنا، عند التحويل من الإحداثيات الكروية إلى الأسطوانية، فإن نصف قطر الأسطوانة \\(\\rho\\) يمثل مسقط المسافة الكروية \\(r\\) على مستوي xy، ويتم حسابه عبر القانون: \\(\\rho = r \\sin \\theta\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 8,
+    "q": "In the DDA algorithm, why are \\(x\\) and \\(y\\) initialized with an added 0.5?",
+    "opts": [
+      "To avoid division by zero",
+      "To round values correctly for central pixel addressing",
+      "To increase the line length",
+      "To convert to floating point"
+    ],
+    "ans": "b",
+    "page": 2,
+    "exp": {
+      "en": "Adding 0.5 to the starting coordinates in the DDA algorithm ensures that when the coordinates are converted to integers (truncated), they map to the nearest pixel center (representing rounding to the nearest integer) rather than always rounding down.\nIncorrect:\n- (a) is wrong because division by zero is handled by checking if \\(\\Delta x = 0\\).\n- (c) is wrong because 0.5 does not change the physical length of the line.\n- (d) is wrong because coordinates are already represented as floating points.",
+      "ar": "هذا يعني أننا نضيف القيمة 0.5 عند تهيئة إحداثيات البداية في خوارزمية DDA لضمان تقريب القيم العشرية بشكل صحيح إلى أقرب بكسل يقع في المركز عند تحويلها إلى أعداد صحيحة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 9,
+    "q": "Which equation describes an ellipse centered at the origin with semi-major axis \\(a\\) and semi-minor axis \\(b\\)?",
+    "opts": [
+      "\\(x^2 + y^2 = r^2\\)",
+      "\\(\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1\\)",
+      "\\(\\frac{x^2}{b^2} + \\frac{y^2}{a^2} = 0\\)",
+      "\\(a x^2 + b y^2 = 1\\)"
+    ],
+    "ans": "b",
+    "page": 2,
+    "exp": {
+      "en": "The standard equation of an ellipse centered at the origin with semi-major axis \\(a\\) along the x-axis and semi-minor axis \\(b\\) along the y-axis is \\(\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1\\).\nIncorrect:\n- (a) is the equation of a circle of radius \\(r\\).\n- (c) is only satisfied by the origin point \\((0,0)\\) itself.\n- (d) is a scaled circle equation, not the standard ellipse equation.",
+      "ar": "هنا، المعادلة القياسية للقطع الناقص (البيضوي) المتمركز عند نقطة الأصل مع محاور نصف قطرية \\(a\\) و \\(b\\) هي: \\(\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 10,
+    "q": "In the integer Bresenham’s line algorithm, when the error term \\(\\bar{c} \\ge 0\\), what operations are performed?",
+    "opts": [
+      "\\(y = y + 1\\) and \\(\\bar{c} = \\bar{c} - 2\\Delta x\\)",
+      "\\(x = x + 1\\) and \\(\\bar{c} = \\bar{c} + 2\\Delta y\\)",
+      "\\(y = y - 1\\) and \\(\\bar{c} = \\bar{c} + 2\\Delta x\\)",
+      "\\(x = x - 1\\) and \\(\\bar{c} = \\bar{c} - 2\\Delta y\\)"
+    ],
+    "ans": "a",
+    "page": 2,
+    "exp": {
+      "en": "In Bresenham's line algorithm for the first octant (where x increments in every step), when the error term \\(c \\ge 0\\), the line is closer to the upper pixel. Therefore, we increment \\(y\\) by 1 (\\(y = y + 1\\)) and subtract \\(2\\Delta x\\) from the error term (\\(c = c - 2\\Delta x\\)) to reflect this step.\nIncorrect:\n- (b) is the operation performed at every step regardless of the error sign (incrementing \\(x\\) and updating \\(c\\) with \\(2\\Delta y\\)).\n- (c) and (d) contain incorrect updates and signs.",
+      "ar": "هذا يعني أنه في خوارزمية بريزنهام، عندما تكون قيمة حد الخطأ أكبر من أو تساوي الصفر (\\(c \\ge 0\\))، فهذا يشير إلى أن الخط أقرب للبكسل الأعلى، لذا نقوم بزيادة قيمة \\(y\\) بمقدار 1 ونطرح القيمة \\(2\\Delta x\\) من متغير القرار لتحديث حد الخطأ."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 11,
+    "q": "Which of the following correctly describes the distinction between points and vectors?",
+    "opts": [
+      "Points have magnitude and direction; vectors specify locations.",
+      "Points are displacements; vectors are locations.",
+      "Points and vectors are identical in 3D graphics.",
+      "Points are locations; vectors are displacements."
+    ],
+    "ans": "d",
+    "page": 2,
+    "exp": {
+      "en": "A point represents a specific spatial location in coordinate space (having no size, only position), whereas a vector represents a displacement (magnitude and direction) between locations.\nIncorrect:\n- (a) and (b) swap the definitions of points and vectors.\n- (c) is false because, although they can be represented by similar coordinate tuples, they are mathematically distinct and behave differently under transformations (e.g., translation affects points but not vectors).",
+      "ar": "هنا، النقطة (Point) تحدد موقعاً معيناً وثابتاً في الفضاء الرسومي، بينما يمثل المتجه (Vector) إزاحة (مسافة واتجاه) بين نقطتين، ولا يعبر عن موقع ثابت."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 12,
+    "q": "Given two vectors \\(\\vec{a} = (x_a, y_a)\\) and \\(\\vec{b} = (x_b, y_b)\\), what is the correct formula for the dot product \\(\\vec{a} \\cdot \\vec{b}\\)?",
+    "opts": [
+      "\\(x_a y_b + x_b y_a\\)",
+      "\\(x_a x_b + y_a y_b\\)",
+      "\\(\\sqrt{x_a^2 + y_a^2} \\cdot \\sqrt{x_b^2 + y_b^2}\\)",
+      "\\(x_a y_a + x_b y_b\\)"
+    ],
+    "ans": "b",
+    "page": 2,
+    "exp": {
+      "en": "The dot product (scalar product) of two 2D vectors \\(a = (x_a, y_a)\\) and \\(b = (x_b, y_b)\\) is computed as the sum of the products of their corresponding components: \\(a \\cdot b = x_a x_b + y_a y_b\\).\nIncorrect:\n- (a) is an incorrect cross-component multiplication.\n- (c) represents the product of the magnitudes of the two vectors, which is only equal to the dot product if they are parallel (cosine of angle is 1).\n- (d) multiplies components within each vector rather than across vectors.",
+      "ar": "هذا يعني أن الضرب النقطي (Dot Product) لمتجهين هو حاصل جمع ضرب المركبات المتشابهة للمتجهين: \\(a \\cdot b = x_a x_b + y_a y_b\\)، وينتج عنه دائماً قيمة عددية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 13,
+    "q": "Which of the following statements about the cross product \\(\\vec{u} = \\vec{v} \\times \\vec{w}\\) is true?",
+    "opts": [
+      "The cross product results in a scalar value.",
+      "The magnitude of \\(\\vec{u}\\) is proportional to the cosine of the angle between \\(\\vec{v}\\) and \\(\\vec{w}\\).",
+      "\\(\\vec{u}\\) is perpendicular to both \\(\\vec{v}\\) and \\(\\vec{w}\\).",
+      "The cross product is commutative: \\(\\vec{v} \\times \\vec{w} = \\vec{w} \\times \\vec{v}\\)."
+    ],
+    "ans": "c",
+    "page": 2,
+    "exp": {
+      "en": "The cross product of two vectors \\(v\\) and \\(w\\) produces a new vector \\(u = v \\times w\\) that is orthogonal (perpendicular) to both original vectors, which is extremely useful for calculating surface normals.\nIncorrect:\n- (a) is false because the cross product results in a vector, not a scalar.\n- (b) is false because the magnitude of the cross product is proportional to the *sine* of the angle: \\(|v \\times w| = |v||w|\\sin\\theta\\).\n- (d) is false because the cross product is anti-commutative: \\(v \\times w = -(w \\times v)\\).",
+      "ar": "هنا، الخاصية الصحيحة للضرب التقاطعي \\(u = v \\times w\\) هي أن المتجه الناتج \\(u\\) يكون متعامداً على كلا المتجهين الأصليين \\(v\\) و \\(w\\)، وهو أمر أساسي لحساب المتجهات الناظمة للأسطح."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 14,
+    "q": "In the context of vectors, what does it mean if \\(\\vec{u} \\cdot \\vec{v} = 0\\)?",
+    "opts": [
+      "\\(\\vec{u}\\) and \\(\\vec{v}\\) are parallel.",
+      "\\(\\vec{u}\\) and \\(\\vec{v}\\) have the same magnitude.",
+      "\\(\\vec{u}\\) and \\(\\vec{v}\\) are perpendicular, orthogonal.",
+      "\\(\\vec{u}\\) or \\(\\vec{v}\\) must be a zero vector."
+    ],
+    "ans": "c",
+    "page": 3,
+    "exp": {
+      "en": "The dot product is defined as \\(u \\cdot v = |u||v|\\cos\\theta\\). If both \\(u\\) and \\(v\\) are non-zero vectors and their dot product is zero, it implies \\(\\cos\\theta = 0\\), which means they are perpendicular (orthogonal) to each other (\\(\\theta = 90^\\circ\\)).\nIncorrect:\n- (a) would yield a dot product of \\(|u||v|\\) or \\(-|u||v|\\).\n- (b) has no direct relation to the dot product being zero.\n- (d) is not necessarily true; two non-zero vectors can have a zero dot product if they are orthogonal.",
+      "ar": "هذا يعني أنه إذا كان حاصل الضرب النقطي لمتجهين يساوي صفراً (\\(u \\cdot v = 0\\))، فإن المتجهين متعامدان تماماً (أي أن الزاوية بينهما هي 90 درجة)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 15,
+    "q": "For a \\(2 \\times 2\\) matrix \\(\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}\\), what is the formula for its determinant?",
+    "opts": [
+      "\\(ab - cd\\)",
+      "\\(ad - bc\\)",
+      "\\(ac - bd\\)",
+      "\\(ad + bc\\)"
+    ],
+    "ans": "b",
+    "page": 3,
+    "exp": {
+      "en": "The determinant of a 2x2 matrix with elements \\(a, b, c, d\\) is computed as the product of the main diagonal elements minus the product of the opposite diagonal elements: \\(ad - bc\\).\nIncorrect:\n- (a), (c), and (d) represent incorrect algebraic operations on the matrix components.",
+      "ar": "هنا، يتم حساب محدد المصفوفة (Determinant) ذات الأبعاد 2x2 عن طريق ضرب عناصر القطر الرئيسي وطرح حاصل ضرب عناصر القطر الآخر منها، أي: \\(ad - bc\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 16,
+    "q": "Which property is correct regarding matrix multiplication?",
+    "opts": [
+      "\\(AB = BA\\) always.",
+      "\\((AB)^T = A^T B^T\\)",
+      "Matrix multiplication is non-commutative: \\(AB \\neq BA\\) in general.",
+      "The product of two \\(2 \\times 2\\) matrices is always a \\(2 \\times 1\\) vector."
+    ],
+    "ans": "c",
+    "page": 3,
+    "exp": {
+      "en": "Matrix multiplication is non-commutative, meaning that the order of operations matters (i.e., \\(AB \\ne BA\\) in general). In computer graphics, this means applying transformations in a different order (e.g., translate then rotate vs. rotate then translate) yields different results.\nIncorrect:\n- (a) violates the fundamental non-commutative property of matrix algebra.\n- (b) is incorrect; the correct transpose rule is \\((AB)^T = B^T A^T\\).\n- (d) is false; multiplying two 2x2 matrices yields another 2x2 matrix.",
+      "ar": "هذا يعني أن عملية ضرب المصفوفات ليست إبدالية بشكل عام، أي أن \\(AB \\neq BA\\). في الرسومات، هذا يعني أن ترتيب تطبيق التحويلات الهندسيّة سيغير النتيجة النهائية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 17,
+    "q": "What is the formula for linear interpolation between two points \\(a\\) and \\(b\\) using parameter \\(t\\)?",
+    "opts": [
+      "\\(p = t a + (1 - t) b\\)",
+      "\\(p = (1 - t) a + t b\\)",
+      "\\(p = a + b + t\\)",
+      "\\(p = a \\cdot t + b \\cdot (1 - t)\\)"
+    ],
+    "ans": "b",
+    "page": 3,
+    "exp": {
+      "en": "The standard formula for linear interpolation (lerp) between points \\(a\\) (at \\(t = 0\\)) and \\(b\\) (at \\(t = 1\\)) is \\(p = (1 - t)a + tb\\).\nIncorrect:\n- (a) interpolates from \\(b\\) to \\(a\\) instead of \\(a\\) to \\(b\\).\n- (c) is mathematically incorrect.\n- (d) is also inverted if we assume the standard convention of moving from \\(a\\) to \\(b\\) as \\(t\\) goes from 0 to 1.",
+      "ar": "هنا، صيغة الاستكمال الخطي (Linear Interpolation) للتحرك بنسبة \\(t\\) بين نقطتين \\(a\\) و \\(b\\) هي: \\(p = (1 - t)a + tb\\)، حيث نكون عند النقطة \\(a\\) عندما تكون \\(t=0\\) وعند النقطة \\(b\\) عندما تكون \\(t=1\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 18,
+    "q": "In vector operations, what is the result of “Point \\(-\\) Point”?",
+    "opts": [
+      "Point",
+      "Scalar",
+      "Undefined",
+      "Vector"
+    ],
+    "ans": "d",
+    "page": 3,
+    "exp": {
+      "en": "Subtracting one point from another point yields a displacement vector that represents the direction and distance from the second point to the first.\nIncorrect:\n- (a) is incorrect; adding/subtracting points directly does not yield another point.\n- (b) is wrong because the result is a multi-dimensional displacement, not a single scalar.\n- (c) is wrong because this is a well-defined operation in affine geometry.",
+      "ar": "هذا يعني أن طرح نقطة من نقطة أخرى ينتج عنه متجه يمثل الإزاحة والاتجاه والمسافة بين هاتين النقطتين."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 19,
+    "q": "Which of the following is an application of the dot product in computer graphics mentioned in the\nlecture?",
+    "opts": [
+      "Finding the area of a triangle",
+      "Computing rotation axes",
+      "Normalizing vectors",
+      "Lighting calculations, cosine law"
+    ],
+    "ans": "d",
+    "page": 3,
+    "exp": {
+      "en": "The dot product is heavily used in lighting calculations (such as Lambert's Cosine Law for diffuse reflection) to determine the angle between the light source vector and the surface normal vector.\nIncorrect:\n- (a) uses the cross product magnitude to find the area of a triangle.\n- (b) uses the cross product to find perpendicular rotation axes.\n- (c) is done by dividing a vector by its own magnitude.",
+      "ar": "هنا، يُعد حساب شدة الإضاءة (قانون جيب التمام لمشاهد انتشار الضوء) التطبيق الأهم للضرب النقطي في الرسومات، حيث يُستخدم لتحديد زاوية سقوط الضوء على الأسطح بناءً على الناظم ومتجه الضوء."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 20,
+    "q": "The inverse of a \\(2 \\times 2\\) matrix \\(\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}\\) is given by:",
+    "opts": [
+      "\\(\\frac{1}{ad - bc} \\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}\\)",
+      "\\(\\frac{1}{ad - bc} \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}\\)",
+      "\\(\\frac{1}{ad + bc} \\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}\\)",
+      "\\(\\frac{1}{ab - cd} \\begin{bmatrix} a & -b \\\\ -c & d \\end{bmatrix}\\)"
+    ],
+    "ans": "a",
+    "page": 4,
+    "exp": {
+      "en": "The inverse of a 2x2 matrix is given by the formula \\(\\frac{1}{ad-bc} \\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}\\), which involves scaling the adjugate matrix by the reciprocal of the determinant \\(ad-bc\\). This is represented in choice a.\nIncorrect:\n- (b), (c), and (d) represent incomplete or incorrect algebraic formulas for matrix inversion.",
+      "ar": "هذا يعني أن مقلوب المصفوفة (Inverse) ذات البعد 2x2 يُحسب بقسمة مصفوفة المرافقة الثنائية على قيمة المحدد \\(ad-bc\\)، مع تبديل عناصر القطر الرئيسي وتغيير إشارة عناصر القطر الثانوي."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 21,
+    "q": "In 2D translation, how is a point \\(P(x, y)\\) transformed to \\(P'(x', y')\\) using a translation vector \\(T(t_x, t_y)\\)?",
+    "opts": [
+      "\\(x' = x \\cdot t_x, \\quad y' = y \\cdot t_y\\)",
+      "\\(x' = x + t_y, \\quad y' = y + t_x\\)",
+      "\\(x' = x - t_x, \\quad y' = y - t_y\\)",
+      "\\(x' = x + t_x, \\quad y' = y + t_y\\)"
+    ],
+    "ans": "d",
+    "page": 4,
+    "exp": {
+      "en": "Translation is an additive operation where the translation offsets \\(t_x\\) and \\(t_y\\) are added to the original coordinates, yielding \\(x' = x + t_x\\) and \\(y' = y + t_y\\). This is represented in choice d.\nIncorrect:\n- (a) represents scaling (multiplication).\n- (c) represents translation in the negative direction.",
+      "ar": "هنا، تتم عملية الإزاحة (Translation) في الأبعاد الثنائية بجمع قيم الإزاحة \\(t_x\\) و \\(t_y\\) إلى الإحداثيات الأصلية، لتصبح النقطة الجديدة: \\(x' = x + t_x\\) و \\(y' = y + t_y\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 22,
+    "q": "What is the primary reason for using homogeneous coordinates in geometric transformations?",
+    "opts": [
+      "To avoid using floating-point numbers.",
+      "To reduce the number of arithmetic operations.",
+      "To make reflection transformations impossible.",
+      "To represent translation, rotation, and scaling as a single matrix multiplication."
+    ],
+    "ans": "d",
+    "page": 4,
+    "exp": {
+      "en": "Homogeneous coordinates (representing a 2D point as a 3D vector \\([x, y, 1]^T\\)) allow non-linear translation transformations to be represented as linear matrix multiplications. This enables multiple transformations (translation, rotation, scaling) to be combined (composited) into a single matrix.\nIncorrect:\n- (a) is wrong because homogeneous coordinates still use floats.\n- (b) is wrong because homogeneous coordinates actually add a dimension, slightly increasing the raw number of operations.\n- (c) is wrong because reflection is easily represented in homogeneous form.",
+      "ar": "هذا يعني أن السبب الرئيسي لاستخدام الإحداثيات المتجانسة هو إمكانية دمج عمليات الإزاحة والدوران والتحجيم معاً وتمثيلها كمصفوفة واحدة تُضرب بالنقطة، مما يسهل دمج التحويلات المتعاقبة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 23,
+    "q": "Which of the following is the correct \\(3 \\times 3\\) homogeneous coordinate matrix for 2D rotation by angle \\(\\theta\\) counterclockwise about the origin?",
+    "opts": [
+      "\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & 0 \\\\ \\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} \\cos\\theta & \\sin\\theta & 0 \\\\ -\\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & t_x \\\\ 0 & 1 & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & t_x \\\\ \\sin\\theta & \\cos\\theta & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "a",
+    "page": 4,
+    "exp": {
+      "en": "The standard 3x3 homogeneous matrix for a counterclockwise 2D rotation by an angle \\(\\theta\\) is:\n\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & 0 \\\\ \\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (b) represents a clockwise rotation.\n- (c) represents a translation matrix.\n- (d) is a combination of rotation and translation.",
+      "ar": "هنا، المصفوفة المتجانسة الصحيحة للدوران ثنائي الأبعاد عكس عقارب الساعة بزاوية \\(\\theta\\) حول نقطة الأصل هي:\n\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & 0 \\\\ \\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 24,
+    "q": "When performing a 2D composite transformation that involves scaling about an arbitrary point \\((x_f, y_f)\\), what is the correct sequence of basic transformations?",
+    "opts": [
+      "Scale first, then translate to the origin, then translate back.",
+      "Rotate first, then scale, then translate.",
+      "Translate to the origin, rotate, then translate back.",
+      "Translate to the origin, scale, then translate back."
+    ],
+    "ans": "d",
+    "page": 5,
+    "exp": {
+      "en": "To scale an object about an arbitrary pivot point \\((x_f, y_f)\\), we must first translate the pivot point to the origin: \\(T(-x_f, -y_f)\\), apply the scaling: \\(S(s_x, s_y)\\), and then translate the origin back to the pivot point: \\(T(x_f, y_f)\\).\nIncorrect:\n- (a) performs scaling before translating, which scales about the origin and shifts the object incorrectly.\n- (b) and (c) introduce rotation, which is not part of a simple scale-only operation.",
+      "ar": "هذا يعني أنه لتكبير/تصغير شكل حول نقطة معينة (وليس نقطة الأصل)، يجب أولاً إزاحة الشكل بحيث تنطبق تلك النقطة على نقطة الأصل، ثم إجراء التحجيم (Scaling)، وأخيراً إزاحة الشكل بالاتجاه المعاكس لإعادته إلى موضعه الأصلي."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 25,
+    "q": "Which statement about the order of transformations is correct?",
+    "opts": [
+      "Matrix multiplication for transformations is always commutative.",
+      "Translation and rotation can be applied in any order without changing the final result.",
+      "Scaling always commutes with rotation.",
+      "The matrix product \\(M_2 \\cdot M_1\\) is generally not equal to \\(M_1 \\cdot M_2\\)."
+    ],
+    "ans": "d",
+    "page": 5,
+    "exp": {
+      "en": "Because matrix multiplication is non-commutative, the product of two transformation matrices \\(M_1 \\cdot M_2\\) is generally not equal to \\(M_2 \\cdot M_1\\). The order in which transformations are applied affects the final position of the object.\nIncorrect:\n- (a), (b), and (c) all claim commutativity, which is mathematically false for general combinations of translation, rotation, and scaling.",
+      "ar": "هنا، نظراً لأن ضرب المصفوفات غير إبدالي، فإن حاصل ضرب المصفوفتين \\(M_1 \\cdot M_2\\) لا يساوي عموماً \\(M_2 \\cdot M_1\\)، مما يعني أن الترتيب الذي نطبق به التحويلات يغير النتيجة النهائية للموضع."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 26,
+    "q": "Which statement about the order of transformations is correct?",
+    "opts": [
+      "Matrix multiplication for transformations is always commutative.",
+      "Translation and rotation can be applied in any order without changing the final result.",
+      "Scaling always commutes with rotation.",
+      "The matrix product \\(M_2 \\cdot M_1\\) is generally not equal to \\(M_1 \\cdot M_2\\)."
+    ],
+    "ans": "d",
+    "page": 5,
+    "exp": {
+      "en": "Since matrix multiplication is non-commutative in linear algebra, changing the order of matrices \\(M_1 \\cdot M_2 \\ne M_2 \\cdot M_1\\) changes the composite transformation.\nIncorrect:\n- (a), (b), and (c) are incorrect because they assert that order does not matter, which is false for general geometric transformations.",
+      "ar": "هذا يعني أن مصفوفات التحويل الهندسي لا تحقق خاصية الإبدال بشكل عام (أي \\(M_1 \\cdot M_2 \\neq M_2 \\cdot M_1\\))، فالترتيب خطوة حاسمة للحصول على الشكل الصحيح."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 27,
+    "q": "For a 2D shear transformation along the x-direction \\((sh_x)\\), which of the following is the correct homogeneous matrix?",
+    "opts": [
+      "\\(\\begin{bmatrix} 1 & sh_x & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ sh_x & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ sh_x & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 0 & sh_x & 0 \\\\ 1 & 0 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "a",
+    "page": 5,
+    "exp": {
+      "en": "A shear transformation along the x-axis shifts the x-coordinates proportionally to the y-coordinate: \\(x' = x + sh_x \\cdot y\\). The 3x3 homogeneous matrix representing this is:\n\\(\\begin{bmatrix} 1 & sh_x & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (b) and (c) represent the identity matrix (no transformation).\n- (d) is missing the diagonal 1s, which would destroy the original coordinate values.",
+      "ar": "هنا، مصفوفة القص ثنائية الأبعاد على طول المحور الأفقي x هي:\n\\(\\begin{bmatrix} 1 & sh_x & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)، حيث تتغير قيمة x بناءً على الإحداثي الصادي y."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 28,
+    "q": "To reflect a 2D point about the x-axis using homogeneous coordinates, which matrix is used?",
+    "opts": [
+      "\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} -1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 0 & 1 & 0 \\\\ 1 & 0 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} -1 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "a",
+    "page": 6,
+    "exp": {
+      "en": "To reflect a point across the x-axis, the x-coordinate remains unchanged while the y-coordinate changes sign (\\(y' = -y\\)). The homogeneous matrix for this is:\n\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (b) reflects about the y-axis (negates x).\n- (c) reflects about the line \\(y = x\\) (swaps x and y).\n- (d) represents reflection about both axes (negates both x and y).",
+      "ar": "هذا يعني أنه لعكس نقطة حول المحور الأفقي x، فإن إحداثي x يظل كما هو بينما تنعكس إشارة إحداثي y (تصبح سالبة)، والمصفوفة المناسبة هي:\n\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 29,
+    "q": "What is the homogeneous 3D scaling matrix for scaling factors \\(s_x, s_y, s_z\\)?",
+    "opts": [
+      "\\(\\begin{bmatrix} s_x & 0 & 0 & 0 \\\\ 0 & s_y & 0 & 0 \\\\ 0 & 0 & s_z & 0 \\\\ 0 & 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & 0 & t_x \\\\ 0 & 1 & 0 & t_y \\\\ 0 & 0 & 1 & t_z \\\\ 0 & 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} s_y & 0 & 0 & 0 \\\\ 0 & s_x & 0 & 0 \\\\ 0 & 0 & s_z & 0 \\\\ 0 & 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & 0 & 0 \\\\ \\sin\\theta & \\cos\\theta & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "a",
+    "page": 6,
+    "exp": {
+      "en": "The homogeneous 4x4 matrix for 3D scaling places the scaling factors \\(s_x, s_y, s_z\\) along the main diagonal:\n\\(\\begin{bmatrix} s_x & 0 & 0 & 0 \\\\ 0 & s_y & 0 & 0 \\\\ 0 & 0 & s_z & 0 \\\\ 0 & 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (b) represents translation.\n- (d) represents rotation about the z-axis.",
+      "ar": "هنا، مصفوفة التحجيم ثلاثية الأبعاد تضع معاملات التكبير والتصغير \\(s_x, s_y, s_z\\) على طول القطر الرئيسي للمصفوفة متجانسة الأبعاد 4x4:\n\\(\\begin{bmatrix} s_x & 0 & 0 & 0 \\\\ 0 & s_y & 0 & 0 \\\\ 0 & 0 & s_z & 0 \\\\ 0 & 0 & 0 & 1 \\end{bmatrix}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 30,
+    "q": "In 3D, what is the effect of a rotation matrix about the Y-axis on a point’s coordinates?",
+    "opts": [
+      "\\(x\\) and \\(z\\) change, \\(y\\) remains the same.",
+      "\\(y\\) and \\(z\\) change, \\(x\\) remains the same.",
+      "\\(x\\) and \\(y\\) change, \\(z\\) remains the same.",
+      "All three coordinates change."
+    ],
+    "ans": "a",
+    "page": 6,
+    "exp": {
+      "en": "When rotating about the Y-axis in 3D, the Y-coordinates of all points remain unchanged (as the Y-axis is the axis of rotation), while the X and Z coordinates are transformed.\nIncorrect:\n- (b) describes rotation about the X-axis (X remains constant).\n- (c) describes rotation about the Z-axis (Z remains constant).\n- (d) is not possible for standard single-axis rotations.",
+      "ar": "هذا يعني أنه عند تدوير نقطة حول المحور الصادي Y في الفضاء ثلاثي الأبعاد، فإن قيمة المحور Y تظل ثابتة (لأنها محور الدوران نفسه)، بينما تتغير قيم الإحداثيات الأفقيّة والعمقية X و Z."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 31,
+    "q": "What is the most accurate definition of \"Computer Graphics\"?",
+    "opts": [
+      "The process of writing code for website layouts.",
+      "Anything to do with visual representations on a computer.",
+      "The physical hardware used to display images on a monitor.",
+      "A type of software used exclusively for video editing."
+    ],
+    "ans": "b",
+    "page": 6,
+    "exp": {
+      "en": "Computer graphics encompasses any method or technology involved in creating, manipulating, storing, and displaying visual images and representations using computers.\nIncorrect:\n- (a) refers to web design/development, which is only a specific application.\n- (c) refers to display hardware, not the field of study itself.\n- (d) is too narrow, as video editing is just one specific software application.",
+      "ar": "هنا، التعريف الأكثر دقة لـ \"رسومات الحاسوب\" هو كل ما يتعلق بإنشاء وتعديل وعرض الصور والتمثيلات المرئية باستخدام أجهزة الكمبيوتر."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 32,
+    "q": "Which of the following is an application of Computer Graphics (CG)?",
+    "opts": [
+      "Video games and animated films",
+      "Medical imaging",
+      "Computer-Aided Design (CAD)",
+      "All of the above"
+    ],
+    "ans": "d",
+    "page": 7,
+    "exp": {
+      "en": "Computer graphics is used across diverse industries, including entertainment (video games, films), healthcare (MRI/CT scan reconstruction), and engineering (CAD software).\nIncorrect:\n- (a), (b), and (c) are all valid applications, meaning 'All of the above' is the correct choice.",
+      "ar": "هذا يعني أن رسومات الحاسوب تدخل في شتى المجالات مثل ألعاب الفيديو، التصوير الطبي، وتصميم الهندسي بمساعدة الحاسوب (CAD)، لذا فإن جميع الخيارات المذكورة صحيحة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 33,
+    "q": "What is the smallest addressable screen element in a display device?",
+    "opts": [
+      "Vertex",
+      "Edge",
+      "Pixel",
+      "Fragment"
+    ],
+    "ans": "c",
+    "page": 7,
+    "exp": {
+      "en": "A pixel (picture element) is the smallest physical element on a display screen that can be assigned a color or intensity.\nIncorrect:\n- (a) is a mathematical 3D coordinate point.\n- (b) is a line segment connecting vertices.\n- (d) is a candidate pixel generated during rasterization, which may or may not end up in the frame buffer.",
+      "ar": "هنا، البكسل هو أصغر عنصر ضوئي يمكن التحكم في لونه وإضاءته على شاشة العرض بشكل فردي."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 34,
+    "q": "What is Modeling in Computer Graphics (CG)?",
+    "opts": [
+      "Mathematical representations of 3D objects and surfaces",
+      "Converting 3D scenes into 2D images with lighting effects",
+      "Generating motion using a sequence of images",
+      "Processing images to enhance quality and extract features"
+    ],
+    "ans": "a",
+    "page": 7,
+    "exp": {
+      "en": "Modeling is the phase of the graphics pipeline where the shapes, geometry, and structures of 3D objects are mathematically defined (e.g., using polygons, vertices, and curves).\nIncorrect:\n- (b) describes rendering.\n- (c) describes animation.\n- (d) describes image processing.",
+      "ar": "هذا يعني أن النمذجة (Modeling) في الرسومات هي عملية بناء الهياكل والتمثيلات الرياضية للأجسام والأسطح ثلاثية الأبعاد باستخدام النقاط والمضلعات."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 35,
+    "q": "What is Rendering in Computer Graphics (CG)?",
+    "opts": [
+      "Converting 3D models into 2D images with realistic effects",
+      "Representing data using charts and graphs for analysis",
+      "Processing images to enhance quality and extract details",
+      "Creating the illusion of motion using a sequence of images"
+    ],
+    "ans": "a",
+    "page": 7,
+    "exp": {
+      "en": "Rendering is the process of generating a 2D image from a 3D scene description, computing lighting, shading, textures, and perspective to make it look realistic.\nIncorrect:\n- (b) describes data visualization.\n- (c) describes digital image processing.\n- (d) describes animation.",
+      "ar": "هنا، عملية التصيير أو الإخراج (Rendering) تعني تحويل النماذج ثلاثية الأبعاد والمشهد الافتراضي إلى صورة ثنائية الأبعاد يمكن عرضها على الشاشة مع حساب الضوء والظلال."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 36,
+    "q": "What is Animation in Computer Graphics (CG)?",
+    "opts": [
+      "Processing images to improve quality and clarity",
+      "Representing data using charts and graphs for analysis",
+      "Creating the illusion of motion using a sequence of images",
+      "Designing static 2D shapes and geometric figures"
+    ],
+    "ans": "c",
+    "page": 7,
+    "exp": {
+      "en": "Animation is the technique of creating the illusion of movement by rapidly displaying a sequence of static images (frames) that change slightly over time.\nIncorrect:\n- (a) refers to image enhancement.\n- (b) refers to data visualization.\n- (d) refers to vector or graphic design.",
+      "ar": "هذا يعني أن الرسوم المتحركة (Animation) هي خلق وهم الحركة للمشاهدين عن طريق عرض متتالٍ وسريع لمجموعة من الصور الثابتة التي تختلف في التفاصيل بشكل طفيف."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 37,
+    "q": "What is Interaction in Computer Graphics (CG)?",
+    "opts": [
+      "Creating mathematical representations of 3D objects and surfaces",
+      "Converting 3D scenes into 2D images with lighting effects",
+      "Allowing users to control and communicate with graphical systems",
+      "Storing pixel colors before displaying them on the screen"
+    ],
+    "ans": "c",
+    "page": 7,
+    "exp": {
+      "en": "Interaction refers to user input (via keyboard, mouse, VR controllers) that allows users to manipulate, navigate, and control graphical objects and environments in real time.\nIncorrect:\n- (a) describes modeling.\n- (b) describes rendering.\n- (d) describes the function of a frame buffer.",
+      "ar": "هنا، التفاعل (Interaction) يعني قدرة المستخدم على التواصل والتحكم في النظام الرسومي وتعديل المشهد في الوقت الفعلي باستخدام أدوات الإدخال مثل الفأرة أو لوحة المفاتيح."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 38,
+    "q": "What is the process of converting an object from a vector format into a raster format (pixels) so it can\nbe displayed on a screen?",
+    "opts": [
+      "Shading",
+      "Rasterization",
+      "Ray tracing",
+      "Transparency"
+    ],
+    "ans": "b",
+    "page": 7,
+    "exp": {
+      "en": "Rasterization is the process of converting continuous vector graphics (like lines and triangles defined by vertices) into discrete pixels (a raster format) to be written into the frame buffer.\nIncorrect:\n- (a) is the calculation of pixel colors based on lighting.\n- (c) is an alternative rendering method that traces light rays instead of projecting polygons.\n- (d) is a physical transparency blending property.",
+      "ar": "هذا يعني أن عملية التنقيط (Rasterization) هي تحويل الأشكال الموجهة (Vector) والخطوط الرياضية إلى بكسلات رقمية (نقاط ملونة) يمكن عرضها على الشاشة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 39,
+    "q": "A visual presentation of an object created by specifying each edge where two smooth surfaces meet\nis called a:",
+    "opts": [
+      "Texture model",
+      "Ray traced model",
+      "Wire-frame model",
+      "API model"
+    ],
+    "ans": "c",
+    "page": 8,
+    "exp": {
+      "en": "A wire-frame model represents a 3D object using only its vertices and the line segments (edges) that connect them, looking like a structure made of wires.\nIncorrect:\n- (a) is a model with texture maps applied.\n- (b) refers to a model rendered using ray tracing.\n- (d) is not a standard computer graphics modeling term.",
+      "ar": "هنا، يُطلق على تمثيل الأجسام ثلاثية الأبعاد التي تظهر فقط كخطوط وهياكل عظمية تربط بين الحواف اسم \"النموذج السلكي\" (Wire-frame model)."
+    },
+    "hasImage": true
+  },
+  {
+    "n": 40,
+    "q": "What is an image, represented as a rectangular array of pixels, that can be mapped onto 3D surfaces\nto make them look like wood, stone, or cotton?",
+    "opts": [
+      "Vertex",
+      "API",
+      "Shading",
+      "Texture"
+    ],
+    "ans": "d",
+    "page": 8,
+    "exp": {
+      "en": "A texture map is a 2D image mapped onto a 3D surface to add realistic detail (such as color, roughness, pattern, or material type) without increasing geometric complexity.\nIncorrect:\n- (a) is a single point in space.\n- (b) is an interface to command graphics hardware.\n- (c) is the calculation of lighting color.",
+      "ar": "هذا يعني أن الإكساء أو النسيج (Texture) هو صورة ثنائية الأبعاد يتم لفها وتثبيتها على الأسطح ثلاثية الأبعاد لمنحها مظهراً واقعياً يحاكي الخشب أو الحجر أو القماش."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 41,
+    "q": "Which technique generates an image by tracing the path of light through pixels in an image plane?",
+    "opts": [
+      "Rasterization",
+      "Ray tracing",
+      "Shading",
+      "Wire-frame"
+    ],
+    "ans": "b",
+    "page": 8,
+    "exp": {
+      "en": "Ray tracing is a rendering technique that simulates the physical behavior of light, casting rays from the camera through each pixel and tracing their interactions (reflection, refraction, shadows) with objects in the scene.\nIncorrect:\n- (a) projects triangles directly onto the screen without tracing light rays.\n- (c) is a sub-step of rendering that calculates lighting.\n- (d) is a simplified representation showing only edges.",
+      "ar": "هنا، تعتمد تقنية تتبع الأشعة (Ray tracing) على تتبع مسار حزم الضوء المنطلقة من الكاميرا عبر كل بكسل لمحاكاة الانعكاس والانكسار والظلال بشكل يحاكي الطبيعة بدقة عالية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 42,
+    "q": "The physical property of allowing light to pass through a material is called:",
+    "opts": [
+      "Shading",
+      "Texture",
+      "Transparency",
+      "Rasterization"
+    ],
+    "ans": "c",
+    "page": 8,
+    "exp": {
+      "en": "Transparency is the physical property of a material that allows light rays to pass through it, enabling objects behind it to be seen.\nIncorrect:\n- (a), (b), and (d) are computer graphics processes/techniques, not physical material properties.",
+      "ar": "هذا يعني أن الشفافية (Transparency) هي الخاصية الفيزيائية التي تسمح للضوء بالمرور عبر المادة، مما يجعل الأجسام الواقعة خلفها مرئية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 43,
+    "q": "What is the process of altering the color of an object based on its angle and distance to lights to create\na photorealistic effect?",
+    "opts": [
+      "Shading",
+      "Rasterization",
+      "Wire-frame",
+      "API"
+    ],
+    "ans": "a",
+    "page": 8,
+    "exp": {
+      "en": "Shading is the computational process of calculating pixel colors across a surface by evaluating the orientation and distance of the surface relative to light sources, generating gradients and shadows.\nIncorrect:\n- (b) is the geometric conversion of shapes to pixels.\n- (c) is a wireframe outline rendering.\n- (d) is the programming interface.",
+      "ar": "هنا، التظليل (Shading) هو عملية حسابية لتغيير لون أسطح الأجسام تدريجياً بناءً على زاويتها ومسافتها من مصادر الضوء لإعطاء إيحاء بالتجسيم والواقعية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 44,
+    "q": "What is the main purpose of a Graphics API?",
+    "opts": [
+      "To build physical screens and monitors.",
+      "To translate high-level programming commands into specific instructions for the graphics hardware.",
+      "To change the physical material of the computer.",
+      "To count the number of pixels on a screen."
+    ],
+    "ans": "b",
+    "page": 8,
+    "exp": {
+      "en": "A Graphics Application Programming Interface (API), like OpenGL, DirectX, or Vulkan, acts as an abstraction layer that translates standard programming calls into instructions that can be executed by the graphics card (GPU).\nIncorrect:\n- (a) and (c) describe physical hardware manufacturing/modification.\n- (d) is not the primary purpose of a graphics API.",
+      "ar": "هذا يعني أن واجهة برمجة تطبيقات الرسومات (Graphics API) مثل OpenGL أو DirectX تعمل كوسيط برمجي يقوم بترجمة الأوامر عالية المستوى البرمجية إلى تعليمات تفهمها وتنفذها بطاقة الرسوميات."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 45,
+    "q": "Elementary graphics building blocks, such as a point, line, or triangle, are known as:",
+    "opts": [
+      "Textures",
+      "Graphics APIs",
+      "Graphics Primitives",
+      "Ray tracers"
+    ],
+    "ans": "c",
+    "page": 8,
+    "exp": {
+      "en": "Graphics Primitives are the fundamental geometric entities (such as points, lines, triangles, and polygons) used by drawing systems to build complex 3D models.\nIncorrect:\n- (a) is a 2D image mapped onto surfaces.\n- (b) is the programming interface.\n- (d) is a rendering algorithm.",
+      "ar": "هنا، تسمى اللبنات الهندسية الأساسية التي تستخدم لبناء الأشكال المعقدة، مثل النقطة والخط والمثلث، بـ \"الأوليات الرسومية\" (Graphics Primitives)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 46,
+    "q": "A line segment that joins two adjacent vertices together is called an:",
+    "opts": [
+      "Vertex",
+      "Edge",
+      "Pixel",
+      "Texture"
+    ],
+    "ans": "b",
+    "page": 9,
+    "exp": {
+      "en": "An edge is a 1D line segment that connects two adjacent vertices in a polygon or polygonal mesh.\nIncorrect:\n- (a) is a single 0D corner point.\n- (c) is a screen pixel.\n- (d) is a surface image map.",
+      "ar": "هذا يعني أن الحافة (Edge) هي قطعة مستقيمة تربط بين رأسين متجاورين في المضلع أو المجسم."
+    },
+    "hasImage": true
+  },
+  {
+    "n": 47,
+    "q": "The common endpoint of two or more-line segments.",
+    "opts": [
+      "Vertex",
+      "Edge",
+      "Pixel",
+      "Texture"
+    ],
+    "ans": "a",
+    "page": 9,
+    "exp": {
+      "en": "A vertex (plural: vertices) is the 3D coordinate point where two or more edges or line segments meet.\nIncorrect:\n- (b) is the line segment between vertices.\n- (c) is a display screen element.\n- (d) is a surface image map.",
+      "ar": "هنا، الرأس (Vertex) هو النقطة التي تلتقي فيها نهايتا قطعتين مستقيمتين أو أكثر في الأشكال الهندسية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 48,
+    "q": "What stores pixel colors before display?",
+    "opts": [
+      "Keyboard",
+      "Frame Buffer",
+      "Mouse",
+      "Scanner"
+    ],
+    "ans": "b",
+    "page": 9,
+    "exp": {
+      "en": "The frame buffer is a dedicated block of high-speed memory (VRAM) that stores the final color values of every pixel to be displayed on the monitor screen.\nIncorrect:\n- (a) and (c) are user input devices.\n- (d) is an image input scanning device.",
+      "ar": "هذا يعني أن ذاكرة إطار العرض (Frame Buffer) هي ذاكرة مؤقتة خاصة في بطاقة الرسوميات تُخزن فيها قيم الألوان الخاصة بكل بكسل قبل إرسالها وعرضها على الشاشة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 49,
+    "q": "In vector operations, what is the result of “Point + Point”?",
+    "opts": [
+      "Point",
+      "Scalar",
+      "Undefined",
+      "Vector"
+    ],
+    "ans": "c",
+    "page": 9,
+    "exp": {
+      "en": "In vector algebra and affine spaces, adding two points directly is an undefined operation because points represent absolute locations and their sum lacks physical or geometric meaning.\nIncorrect:\n- (a), (b), and (d) are wrong because point-point addition is mathematically undefined (unlike Point + Vector = Point, or Point - Point = Vector).",
+      "ar": "هنا، حاصل جمع \"نقطة + نقطة\" هي عملية غير معرفة في الرياضيات الرسومية والفضاء التآلفي، لأنه لا يوجد معنى هندسي لجمع موقعين مطلقين معاً."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 50,
+    "q": "Two vectors are considered equal if they have:",
+    "opts": [
+      "The same length but different directions",
+      "Different lengths but the same direction",
+      "The same length and the same direction",
+      "The same origin point regardless of length"
+    ],
+    "ans": "c",
+    "page": 9,
+    "exp": {
+      "en": "A vector is defined solely by its magnitude (length) and direction. Therefore, two vectors are equal if and only if they share the same magnitude and direction, regardless of their starting point in space.\nIncorrect:\n- (a) and (b) represent unequal vectors because they differ in direction or length.\n- (d) is false because vectors do not have a fixed origin.",
+      "ar": "هذا يعني أن المتجهين يكونان متساويين إذا وفقط إذا كان لهما نفس الطول ونفس الاتجاه، دون اعتبار لمكان وجودهما في الفضاء."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 51,
+    "q": "When two vectors are at a right angle (900) to each other, they are called:",
+    "opts": [
+      "Parallel",
+      "Orthogonal",
+      "Orthonormal",
+      "Dependent"
+    ],
+    "ans": "b",
+    "page": 9,
+    "exp": {
+      "en": "Two vectors that meet at a 90-degree angle are called orthogonal (or perpendicular). Their dot product is always zero.\nIncorrect:\n- (a) means they point in the same or opposite directions (0 or 180 degrees).\n- (c) means they are orthogonal and both are unit vectors.\n- (d) means one can be written as a scalar multiple of the other.",
+      "ar": "هنا، عندما تكون الزاوية بين متجهين 90 درجة، يُطلق عليهما متجهان متعامدان (Orthogonal)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 52,
+    "q": "If two vectors are orthogonal to each other and both are also unit vectors, they are called:",
+    "opts": [
+      "Parallel",
+      "Orthogonal",
+      "Orthonormal",
+      "Dependent"
+    ],
+    "ans": "c",
+    "page": 9,
+    "exp": {
+      "en": "If two vectors are perpendicular (orthogonal) and each has a magnitude of 1 (unit vectors), they are referred to as orthonormal.\nIncorrect:\n- (a) describes vectors pointing in the same/opposite directions.\n- (b) is a broader term that does not require the vectors to be unit length.\n- (d) describes linearly dependent vectors.",
+      "ar": "هذا يعني أنه إذا كان المتجهان متعامدين وكان طول كل منهما يساوي وحدة واحدة، فإنهما يسميان متجهين متعامدين ومتحدي القياس (Orthonormal)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 53,
+    "q": "What is the primary difference between the result of a Dot Product and a Cross Product?",
+    "opts": [
+      "Dot product returns a vector, while Cross product returns a scalar.",
+      "Dot product returns a scalar, while Cross product returns a new vector.",
+      "There is no difference; both return a single number.",
+      "Cross product can only be calculated in 2D space."
+    ],
+    "ans": "b",
+    "page": 10,
+    "exp": {
+      "en": "The dot product computes a single scalar value representing projection, whereas the cross product computes a 3D vector representing a perpendicular direction.\nIncorrect:\n- (a) swaps the two outputs.\n- (c) is false because one is a scalar and the other is a vector.\n- (d) is false because the cross product is defined in 3D space, not 2D space.",
+      "ar": "هنا، الفرق الجوهري هو أن الضرب النقطي ينتج قيمة عددية، بينما الضرب التقاطعي ينتج متجه جديد متعامد على المستوي الذي يضم المتجهين الأصليين."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 54,
+    "q": "In computer graphics, what is the most essential application of the Cross Product?",
+    "opts": [
+      "Finding surface normals essential for lighting.",
+      "Controlling the transparency of a glass object.",
+      "Converting pixels into a vector format.",
+      "Making an object fully transparent."
+    ],
+    "ans": "a",
+    "page": 10,
+    "exp": {
+      "en": "The cross product of two tangent vectors on a polygon surface yields the surface normal vector, which is crucial for determining how light bounces off that surface.\nIncorrect:\n- (b) and (d) are related to alpha blending and transparency, which do not use the cross product.\n- (c) refers to vectorization.",
+      "ar": "هذا يعني أن التطبيق الأكثر أهمية للضرب التقاطعي في البرمجة الرسومية هو إيجاد المتجهات العمودية على الأسطح والتي تعد ضرورية لحسابات الإضاءة والظلال."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 55,
+    "q": "What happens when we find the Transpose \\(A^T\\) of a matrix?",
+    "opts": [
+      "All elements are multiplied by -1.",
+      "The elements on the diagonal become zero.",
+      "Rows and columns are interchanged (swapped).",
+      "The matrix becomes an Identity matrix."
+    ],
+    "ans": "c",
+    "page": 10,
+    "exp": {
+      "en": "Transposing a matrix \\(A\\) to obtain \\(A^T\\) interchanges its rows and columns; the element at row \\(i\\) and column \\(j\\) moves to row \\(j\\) and column \\(i\\).\nIncorrect:\n- (a) represents matrix negation.\n- (b) is not a property of transposition.\n- (d) is only true if the original matrix was already the Identity matrix.",
+      "ar": "هنا، عند حساب منقول أو مدور المصفوفة (Transpose)، يتم تبديل الصفوف لتصبح أعمدة، والأعمدة لتصبح صفوفاً، دون تغيير قيم العناصر نفسها."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 56,
+    "q": "An Identity Matrix \\(I\\) is a square matrix that has:",
+    "opts": [
+      "Ones (1s) everywhere in all positions.",
+      "Zeros on the main diagonal and ones elsewhere.",
+      "Ones (1s) on the main diagonal and zeros (0s) elsewhere.",
+      "Only negative numbers."
+    ],
+    "ans": "c",
+    "page": 10,
+    "exp": {
+      "en": "An Identity Matrix \\(I\\) is a square matrix containing ones (1s) along the main diagonal (from top-left to bottom-right) and zeros (0s) in all other positions.\nIncorrect:\n- (a), (b), and (d) describe matrices with different configurations that do not act as the multiplicative identity.",
+      "ar": "هذا يعني أن مصفوفة الوحدة (Identity Matrix) هي مصفوفة مربعة تحتوي على الرقم واحد (1) على طول قطرها الرئيسي، بينما تكون بقية العناصر في كافة المواضع الأخرى أصفاراً."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 57,
+    "q": "What is the core concept of \"Normalization\" in computer graphics?",
+    "opts": [
+      "Deleting values that are less than zero.",
+      "Transforming/re-scaling values from an arbitrary range into a standard fixed range like [0, 1] or [-1, 1].",
+      "Converting a 3D matrix into a 2D line.",
+      "Making all numbers in a matrix equal to 1."
+    ],
+    "ans": "b",
+    "page": 10,
+    "exp": {
+      "en": "Normalization is the process of re-scaling input coordinates or values from an arbitrary bounding region into a normalized range (typically \\([0, 1]\\) or \\([-1, 1]\\)) to simplify calculations in later pipeline stages.\nIncorrect:\n- (a) represents clipping or clamping.\n- (c) refers to dimensionality reduction or projection.\n- (d) is not a correct definition of normalization.",
+      "ar": "هنا، المفهوم الأساسي لعملية التوحيد أو المعايرة هو إعادة قياس القيم أو الإحداثيات من نطاق عشوائي إلى نطاق قياسي موحد وثابت مثل \\([0, 1]\\) أو \\([-1, 1]\\) لتسهيل معالجتها."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 58,
+    "q": "To reflect a 2D point about the y-axis using homogeneous coordinates, which matrix is used?",
+    "opts": [
+      "\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} -1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 0 & 1 & 0 \\\\ 1 & 0 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} -1 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "b",
+    "page": 10,
+    "exp": {
+      "en": "Reflecting a point across the vertical y-axis negates its x-coordinate (\\(x' = -x\\)) while keeping the y-coordinate unchanged. The corresponding homogeneous matrix is:\n\\(\\begin{bmatrix} -1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (a) reflects about the x-axis.\n- (c) reflects about the line \\(y = x\\).",
+      "ar": "هذا يعني أنه لعكس نقطة حول المحور الرأسي y، نقوم بتغيير إشارة إحداثي x فقط (تصبح سالبة) ونحافظ على إحداثي y، والمصفوفة المتجانسة التي تقوم بذلك هي:\n\\(\\begin{bmatrix} -1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 59,
+    "q": "For a 2D shear transformation along the y-direction \\((sh_y)\\), which of the following is the correct homogeneous matrix?",
+    "opts": [
+      "\\(\\begin{bmatrix} 1 & sh_y & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ sh_y & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ sh_y & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 0 & sh_y & 0 \\\\ 1 & 0 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "b",
+    "page": 11,
+    "exp": {
+      "en": "A shear along the y-direction shifts the y-coordinate proportionally to the x-coordinate: \\(y' = y + sh_y \\cdot x\\). The 3x3 homogeneous matrix for this is:\n\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ sh_y & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (a) represents shear along the x-direction.\n- (c) and (d) are incorrect shear formulations.",
+      "ar": "هنا، مصفوفة القص ثنائية الأبعاد على طول المحور الصادي y هي:\n\\(\\begin{bmatrix} 1 & 0 & 0 \\\\ sh_y & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)، حيث تتغير قيمة الإحداثي الصادي y بالاعتماد على قيمة الإحداثي الأفقي x."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 60,
+    "q": "Which of the following is the correct \\(3 \\times 3\\) homogeneous coordinate matrix for 2D rotation by angle \\(\\theta\\) clockwise about the origin?",
+    "opts": [
+      "\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & 0 \\\\ \\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} \\cos\\theta & \\sin\\theta & 0 \\\\ -\\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & t_x \\\\ 0 & 1 & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} \\cos\\theta & -\\sin\\theta & t_x \\\\ \\sin\\theta & \\cos\\theta & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "b",
+    "page": 11,
+    "exp": {
+      "en": "Rotating clockwise by \\(\\theta\\) is equivalent to rotating counterclockwise by \\(-\\theta\\). Since \\(\\cos(-\\theta) = \\cos\\theta\\) and \\(\\sin(-\\theta) = -\\sin\\theta\\), the homogeneous rotation matrix becomes:\n\\(\\begin{bmatrix} \\cos\\theta & \\sin\\theta & 0 \\\\ -\\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (a) represents counterclockwise rotation.\n- (c) and (d) are translation/shear matrices.",
+      "ar": "هذا يعني أن مصفوفة الدوران ثنائي الأبعاد باتجاه عقارب الساعة بزاوية \\(\\theta\\) هي:\n\\(\\begin{bmatrix} \\cos\\theta & \\sin\\theta & 0 \\\\ -\\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 61,
+    "q": "Which of the following is the correct \\(3 \\times 3\\) homogeneous coordinate matrix for 2D translation by translation vector \\((t_x, t_y)\\)?",
+    "opts": [
+      "\\(\\begin{bmatrix} 1 & t_y & 0 \\\\ t_x & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} t_x & 0 & 0 \\\\ 0 & t_y & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & 0 & t_x \\\\ 0 & 1 & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\)",
+      "\\(\\begin{bmatrix} 1 & t_x & 0 \\\\ t_y & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}\\)"
+    ],
+    "ans": "c",
+    "page": 11,
+    "exp": {
+      "en": "The 3x3 homogeneous matrix for 2D translation embeds the translation factors \\(t_x\\) and \\(t_y\\) in the third column:\n\\(\\begin{bmatrix} 1 & 0 & t_x \\\\ 0 & 1 & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\).\nIncorrect:\n- (a) and (b) represent shear or scaling matrices.\n- (d) has the translation offsets in incorrect positions.",
+      "ar": "هنا، المصفوفة المتجانسة الصحيحة للإزاحة في الأبعاد الثنائية هي:\n\\(\\begin{bmatrix} 1 & 0 & t_x \\\\ 0 & 1 & t_y \\\\ 0 & 0 & 1 \\end{bmatrix}\\)، حيث توضع مسافات الإزاحة في العمود الثالث للمصفوفة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 62,
+    "q": "Bresenham’s line algorithm is highly efficient because it uses:",
+    "opts": [
+      "Heavy floating-point divisions.",
+      "Only incremental integer calculations.",
+      "Complex trigonometric functions like \\(\\sin\\) and \\(\\cos\\).",
+      "Virtual reality matrices."
+    ],
+    "ans": "b",
+    "page": 12,
+    "exp": {
+      "en": "Bresenham's algorithm achieves high execution speed because it avoids costly floating-point arithmetic and divisions, relying entirely on incremental addition, subtraction, and bit-shifting of integers.\nIncorrect:\n- (a) and (c) describe slow, computationally heavy operations that the algorithm was specifically designed to avoid.\n- (d) is a non-existent technical term.",
+      "ar": "هذا يعني أن خوارزمية بريزنهام لرسم الخطوط سريعة وفعالة للغاية لأنها تعتمد بالكامل على العمليات الحسابية التراكمية البسيطة للأعداد الصحيحة وتتجنب الأعداد العشرية والقسمة تماماً."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 63,
+    "q": "Instead of computing all points around a circle, we can utilize its symmetry property to scan-convert\nthe circle by computing only one octant (0° to 45°). This is called:",
+    "opts": [
+      "2-way symmetry",
+      "4-way symmetry",
+      "8-way symmetry",
+      "16-way symmetry"
+    ],
+    "ans": "c",
+    "page": 12,
+    "exp": {
+      "en": "A circle is highly symmetric. By calculating the coordinates of points in only one octant (a 45-degree sector), we can immediately determine the coordinates of the other seven octants by reflecting the coordinates across the axes and diagonals (e.g., swapping x and y, and negating coordinates). This is called 8-way symmetry.\nIncorrect:\n- (a) and (b) represent lower levels of symmetry (like ellipses, which have 4-way symmetry).\n- (d) is incorrect because standard 2D circles do not possess 16-way symmetry.",
+      "ar": "هنا، نظراً للتماثل الشديد للدائرة، فإن حساب إحداثيات ثمن واحد فقط من 0 إلى 45 درجة يتيح لنا استنتاج باقي النقاط للسبعة أثمان الأخرى تلقائياً بالانعكاس، وتسمى هذه الخاصية بالتماثل الثماني (8-way symmetry)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 64,
+    "q": "What is the primary purpose of the \"Viewing\" process in computer graphics?",
+    "opts": [
+      "To physically adjust the hardware refresh rate of a display screen.",
+      "To determine the color blending and lighting calculations of individual primitives.",
+      "To project a 3D virtual world description onto a 2D plane for pixel display.",
+      "To convert 2D pixel coordinates back into structural 3D polygon meshes."
+    ],
+    "ans": "c",
+    "page": 12,
+    "exp": {
+      "en": "The viewing process (or viewing transformation) is responsible for taking a 3D description of a virtual scene and projecting it onto a 2D view plane so it can be rasterized and displayed on a physical flat screen.\nIncorrect:\n- (a) is a hardware synchronization task.\n- (b) refers to the shading and rasterization stages of the pipeline.\n- (d) describes reconstruction/reverse rendering.",
+      "ar": "هذا يعني أن الهدف الأساسي من عملية العرض هو إسقاط المشهد ثلاثي الأبعاد ووصف العالم الافتراضي على مستوٍ ثنائي الأبعاد تمهيداً لعرضه كبكسلات على الشاشة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 65,
+    "q": "What is the correct chronological order of stages in a standard 2D Viewing Pipeline?",
+    "opts": [
+      "Viewport → World Coordinates → Clipping →Window",
+      "World Coordinates → Window → Viewport → Clipping",
+      "Window → Clipping → World Coordinates → Viewport",
+      "Clipping → Viewport → Window → World Coordinates"
+    ],
+    "ans": "b",
+    "page": 12,
+    "exp": {
+      "en": "The standard 2D viewing pipeline starts with defining the objects in World Coordinates, then setting up the Window (defining the area of the world to view), mapping it to the Viewport (defining where it appears on the screen), and performing Clipping against the window boundaries. This sequence corresponds to choice b.\nIncorrect:\n- (a), (c), and (d) place the viewport, clipping, or window stages in incorrect chronological orders.",
+      "ar": "هنا، الترتيب الزمني المعتمد لخطوات المعالجة ثنائية الأبعاد هو: البدء من إحداثيات العالم ثم تحديد نافذة العرض ثم تحديد نافذة الشاشة وأخيراً إجراء عملية القص للمكونات الخارجة عن الحدود."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 66,
+    "q": "Complete the foundational concept statement: The clipping window selects __________, while the\nviewport indicates __________ on the output device.",
+    "opts": [
+      "WHERE we want to see; WHAT we want to see",
+      "HOW FAST we want to see; WHY we want to see",
+      "WHAT we want to see; WHERE it is to be viewed",
+      "THE COLOR we want to see; THE SHAPE we want to see"
+    ],
+    "ans": "c",
+    "page": 12,
+    "exp": {
+      "en": "In computer graphics terminology, the clipping window defines *what* portion of the virtual world is selected to be seen, whereas the viewport defines *where* that selected area is mapped and viewed on the display device.\nIncorrect:\n- (a) swaps the two definitions.\n- (b) and (d) refer to speed, color, or shape, which do not describe the functions of windows and viewports.",
+      "ar": "هذا يعني أن نافذة القص (Clipping Window) تحدد \"ما نريد رؤيته\" من العالم الافتراضي، في حين أن مستطيل العرض (Viewport) يحدد \"أين سيتم عرضه\" على شاشة المستخدم."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 67,
+    "q": "Why do graphics packages commonly restrict clipping windows to be rectangles aligned strictly with\nthe coordinate x and y axes?",
+    "opts": [
+      "Non-rectangular shapes cannot hold colors.",
+      "Any other shape, size, or orientation increases processing and intersection-point computation time.",
+      "To force the GPU to use floating-point numbers.",
+      "Because screens can only display vertical lines."
+    ],
+    "ans": "b",
+    "page": 12,
+    "exp": {
+      "en": "Axis-aligned rectangular clipping windows allow for extremely fast range-checking (e.g., checking if \\(x_{wmin} \\le x \\le x_{wmax}\\)) and simple line intersection calculations. Other shapes or orientations increase the mathematical complexity and processing time for computing intersection points.\nIncorrect:\n- (a) is wrong because non-rectangular shapes can hold colors.\n- (c) is wrong because clipping does not exist to force floating-point numbers on GPUs.\n- (d) is wrong because screens can display lines of any orientation.",
+      "ar": "هنا، يتم استخدام نوافذ القص المستطيلة المحاذية للمحاور لتسريع الحسابات. أي شكل أو اتجاه آخر سيتطلب عمليات رياضية معقدة لحساب نقاط التقاطع، مما يزيد من وقت المعالجة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 68,
+    "q": "Which coordinate system is device-independent, standardized as a square ranging from (0,0) to (1,1)\nor (-1,-1) to (1,1) depending on the API?",
+    "opts": [
+      "World Coordinates (WC)",
+      "Screen Coordinates",
+      "Normalized Device Coordinates (NDC)",
+      "Cartesian Window Coordinates"
+    ],
+    "ans": "c",
+    "page": 13,
+    "exp": {
+      "en": "Normalized Device Coordinates (NDC) are device-independent coordinates mapped to a standard range (like \\([0, 1]^2\\) or \\([-1, 1]^2\\)) before being mapped to device-specific screen coordinates.\nIncorrect:\n- (a) World Coordinates represent the coordinates of the virtual scene, which are not normalized.\n- (b) Screen Coordinates are device-dependent pixel values.\n- (d) Cartesian Window Coordinates are not standardized to a device-independent unit square.",
+      "ar": "هذا يعني أن نظام الإحداثيات الموحد (NDC) هو نظام مستقل عن الجهاز، حيث يتم توحيد الإحداثيات في نطاق قياسي مثل \\([0, 1]^2\\) أو \\([-1, 1]^2\\) قبل الانتقال إلى شاشة العرض الفعلية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 69,
+    "q": "Which of the following is NOT a stated reason for normalizing coordinates before applying clipping\nroutines?",
+    "opts": [
+      "To make the viewing process independent of any specific output device hardware.",
+      "To prevent rendering outside the screen area for optimized performance.",
+      "To prevent mathematical errors such as division by zero in 3D.",
+      "To automatically translate objects clockwise by 45 degrees."
+    ],
+    "ans": "d",
+    "page": 13,
+    "exp": {
+      "en": "Normalizing coordinates does not automatically perform rotations (like rotating objects clockwise by 45 degrees). It is done to achieve hardware independence, optimize clipping performance, and prevent 3D mathematical errors.\nIncorrect:\n- (a), (b), and (c) are all valid reasons for normalization in graphics pipelines, making them incorrect choices for a 'NOT' question.",
+      "ar": "هنا، توحيد الإحداثيات يهدف إلى حماية العملية الحسابية وجعلها مستقلة عن شاشة العرض، ولا علاقة له بتدوير الأشكال بزاوية 45 درجة تلقائياً."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 70,
+    "q": "When mapping a world-coordinate point \\((x_w, y_w)\\) to viewport coordinates \\((x_v, y_v)\\), what core property must be preserved?",
+    "opts": [
+      "The point must always land at the exact origin (0,0).",
+      "The relative positions of the two points within their respective rectangles must be exactly the same.",
+      "The viewport coordinates must be exactly double the size of world coordinates.",
+      "The y coordinate must be inverted to a negative value."
+    ],
+    "ans": "b",
+    "page": 13,
+    "exp": {
+      "en": "The window-to-viewport transformation must preserve the relative position of the point. A point located at a certain fraction of the window's width and height must map to the same relative fraction within the viewport.\nIncorrect:\n- (a) is wrong because points do not all map to the origin.\n- (c) is wrong because viewport size is independent of world window size.\n- (d) is wrong because y-inversion is not a general requirement for preserving mapping properties.",
+      "ar": "هذا يعني أن النقطة يجب أن تحافظ على موضعها النسبي داخل مستطيل العرض بنفس النسبة التي كانت عليها داخل مستطيل العالم الافتراضي."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 71,
+    "q": "The Cohen-Sutherland algorithm divides the 2D plane into nine regions. Each region is assigned a\nunique binary code consisting of how many bits?",
+    "opts": [
+      "2 bits",
+      "4 bits",
+      "8 bits",
+      "16 bits"
+    ],
+    "ans": "b",
+    "page": 13,
+    "exp": {
+      "en": "The Cohen-Sutherland algorithm uses a 4-bit region code (often called an outcode) to represent the position of a point relative to the clipping window (Top, Bottom, Right, Left).\nIncorrect:\n- 2, 8, and 16 bits do not correspond to the four boundary bits (Top, Bottom, Right, Left) used in the standard algorithm.",
+      "ar": "هنا، تستخدم خوارزمية (Cohen-Sutherland) رمزاً مكوناً من 4 بتات لتحديد المنطقة التي تقع فيها النقطة بالنسبة لنافذة القص (أعلى، أسفل، يمين، يسار)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 72,
+    "q": "How can a graphics application achieve a \"zoom-in\" effect using the window-to-viewport\ntransformation?",
+    "opts": [
+      "By dynamically reducing the resolution of the physical viewport.",
+      "By increasing the size of both the clipping window and the viewport proportionally.",
+      "By mapping a smaller world-coordinate clipping window onto a fixed-size viewport.",
+      "By mapping a larger world-coordinate clipping window onto a fixed-size viewport."
+    ],
+    "ans": "c",
+    "page": 13,
+    "exp": {
+      "en": "Mapping a smaller region of the world (clipping window) onto the same size viewport causes the objects in that smaller region to appear larger, creating a zoom-in effect.\nIncorrect:\n- (a) only changes resolution.\n- (b) keeps the scale of objects relative to the screen the same.\n- (d) maps a larger region of the world, making objects appear smaller (zoom-out).",
+      "ar": "هذا يعني أنه لتكبير المشهد (Zoom-in)، نقوم بتصغير نافذة القص في العالم الافتراضي مع عرضها على نفس مساحة العرض الثابتة، مما يجعل التفاصيل تبدو أكبر."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 73,
+    "q": "How can a graphics application achieve a \"zoom-out\" effect using the window-to-viewport\ntransformation?",
+    "opts": [
+      "By dynamically reducing the resolution of the physical viewport.",
+      "By increasing the size of both the clipping window and the viewport proportionally.",
+      "By mapping a smaller world-coordinate clipping window onto a fixed-size viewport.",
+      "By mapping a larger world-coordinate clipping window onto a fixed-size viewport."
+    ],
+    "ans": "d",
+    "page": 13,
+    "exp": {
+      "en": "Mapping a larger region of the world (clipping window) onto a fixed viewport crams more of the world into the same screen area, making objects appear smaller and thus zooming out.\nIncorrect:\n- (a) only decreases display quality/resolution.\n- (b) keeps the relative scale unchanged.\n- (c) creates a zoom-in effect.",
+      "ar": "هنا، لتصغير المشهد ورؤية مساحة أكبر (Zoom-out)، نقوم بتكبير نافذة القص في العالم الافتراضي وعرضها على نفس مساحة العرض الثابتة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 74,
+    "q": "What is the correct ordering for the clipping window boundaries corresponding to the 4-bit positions\n(from left to right) in the Cohen-Sutherland region code?",
+    "opts": [
+      "Left, Right, Bottom, Top (LRBT)",
+      "Top, Bottom, Right, Left (TBRL)",
+      "Right, Left, Top, Bottom (RLTB)",
+      "Bottom, Top, Left, Right (BTLR)"
+    ],
+    "ans": "b",
+    "page": 14,
+    "exp": {
+      "en": "The standard order of bits in the Cohen-Sutherland algorithm from most-significant to least-significant bit (left to right) is Top, Bottom, Right, Left (TBRL).\nIncorrect:\n- (a), (c), and (d) represent incorrect bit orderings.",
+      "ar": "هذا يعني أن خوارزمية (Cohen-Sutherland) ترتب بتات المنطقة من اليسار إلى اليمين كالتالي: أعلى (Top)، أسفل (Bottom)، يمين (Right)، يسار (Left)، وتختصر بـ (TBRL)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 75,
+    "q": "A 2D point \\(P = (x, y)\\) is saved, not clipped, inside an axis-aligned rectangular clipping window bounded by \\(x_{wmin}, x_{wmax}, y_{wmin}, y_{wmax}\\) if which condition is met?",
+    "opts": [
+      "\\(x + y \\le x_{wmax} + y_{wmax}\\)",
+      "\\(x_{wmax} \\le x \\le x_{wmin} \\quad\\text{and}\\quad y_{wmax} \\le y \\le y_{wmin}\\)",
+      "\\(x \\le x_{wmin} \\quad\\text{or}\\quad y \\le y_{wmin}\\)",
+      "\\(x_{wmin} \\le x \\le x_{wmax} \\quad\\text{and}\\quad y_{wmin} \\le y \\le y_{wmax}\\)"
+    ],
+    "ans": "d",
+    "page": 14,
+    "exp": {
+      "en": "A point is inside the window if its \\(x\\) coordinate is within the horizontal boundaries (\\(x_{wmin} \\le x \\le x_{wmax}\\)) and its \\(y\\) coordinate is within the vertical boundaries (\\(y_{wmin} \\le y \\le y_{wmax}\\)). This is represented in choice d.\nIncorrect:\n- (a) is a simple sum inequality which does not define a rectangle.\n- (b) contains formatting anomalies (redundant unicode spaces/characters).\n- (c) uses an 'or' logic which is incorrect for bounding box containment.",
+      "ar": "هنا، يجب أن تقع إحداثيات النقطة \\((x, y)\\) داخل حدود نافذة القص، أي أن تكون قيمة \\(x\\) بين القيمة الصغرى والعظمى لـ \\(x\\)، وقيمة \\(y\\) بين القيمة الصغرى والعظمى لـ \\(y\\)، وهي الصيغة الممثلة في الخيار d: \\(x_{wmin} \\le x \\le x_{wmax}\\) و \\(y_{wmin} \\le y \\le y_{wmax}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 76,
+    "q": "Any line segment that is completely contained inside the clipping window edges will have a region\ncode of ________ for BOTH of its endpoints.",
+    "opts": [
+      "1111",
+      "0101",
+      "1000",
+      "0000"
+    ],
+    "ans": "d",
+    "page": 14,
+    "exp": {
+      "en": "Endpoints inside the clipping window have all four bits set to 0, which gives a region code of 0000.\nIncorrect:\n- (a), (b), and (c) correspond to regions outside the clipping window.",
+      "ar": "هذا يعني أن أي نقطة تقع بالكامل داخل نافذة القص لا تتجاوز أي حد من الحدود الأربعة، وبالتالي يكون رمز المنطقة الخاص بها هو 0000 لكل من نقطتي البداية والنهاية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 77,
+    "q": "If an endpoint of a line is located LEFT and BELOW the clipping window boundaries, what will be its\nassigned 4-bit region code?",
+    "opts": [
+      "0101",
+      "1010",
+      "0100",
+      "0001"
+    ],
+    "ans": "a",
+    "page": 14,
+    "exp": {
+      "en": "The region code is determined in the order of Top, Bottom, Right, Left (TBRL). Since the point is located Left and Below the clipping window: Top = 0, Bottom = 1, Right = 0, Left = 1. Thus, the code is 0101.",
+      "ar": "يتم تحديد رمز المنطقة بالترتيب: أعلى، أسفل، يمين، يسار (TBRL). بما أن النقطة تقع إلى اليسار والأسفل من نافذة القص: أعلى = 0، أسفل = 1، يمين = 0، يسار = 1. وبالتالي، الرمز هو 0101."
+    },
+    "hasImage": true
+  },
+  {
+    "n": 78,
+    "q": "If a line has a region code value of 1 in the SAME bit position for both endpoints (for example, P1 =\n1001 and P2 = 0101 sharing the Left bit), what does this indicate?",
+    "opts": [
+      "The line is completely inside the clipping window.",
+      "The line is completely outside the clipping window and can be rejected.",
+      "The line passes exactly through the origin (0,0).",
+      "The line is perfectly vertical."
+    ],
+    "ans": "b",
+    "page": 14,
+    "exp": {
+      "en": "If both endpoints share a 1-bit in the same position, it means both points lie on the same outside side of the clipping window (e.g., both are to the left). Therefore, the entire line segment lies completely outside the window and can be trivially rejected.\nIncorrect:\n- (a) is wrong because points inside have code 0000.\n- (c) and (d) are unrelated to region codes sharing a bit.",
+      "ar": "هذا يعني أنه إذا كانت النقطتان تشتركان في نفس البت بقيمة 1 (مثلاً كلاهما على اليسار)، فإن الخط بالكامل يقع خارج نافذة القص ويمكن حذفه مباشرة (Trivial Reject)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 79,
+    "q": "In the Cohen-Sutherland algorithm, lines that cannot be immediately accepted or rejected must be\nchecked for intersections. What is the exact sequence order in which window edges are processed?",
+    "opts": [
+      "Top → Bottom → Right → Left",
+      "Left → Right → Bottom → Top",
+      "Right → Left → Top → Bottom",
+      "Bottom → Top → Left → Right"
+    ],
+    "ans": "b",
+    "page": 14,
+    "exp": {
+      "en": "In the standard implementation of the Cohen-Sutherland algorithm, lines are processed and clipped against the boundaries in the sequence of Left, Right, Bottom, then Top.\nIncorrect:\n- (a), (c), and (d) represent different ordering sequences.",
+      "ar": "هنا، عند حساب نقاط التقاطع للخطوط التي لم يتم قبولها أو رفضها مباشرة، تقوم الخوارزمية بفحص الحدود بالترتيب التالي: اليسار ثم اليمين ثم الأسفل ثم الأعلى."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 80,
+    "q": "Which of the following tasks is unique to 3D computer graphics viewing and is NOT present in 2D\nviewing?",
+    "opts": [
+      "Specifying viewport pixel coordinates",
+      "Projection transformations and lighting effects",
+      "Basic 2D rasterization of points",
+      "Defining World Coordinates lines"
+    ],
+    "ans": "b",
+    "page": 15,
+    "exp": {
+      "en": "Projection transformations (converting 3D coordinates to 2D) and complex 3D lighting calculations are unique to 3D computer graphics. 2D graphics do not require projection from a higher-dimensional space.\nIncorrect:\n- (a), (c), and (d) are all required or present in 2D computer graphics.",
+      "ar": "هذا يعني أن عمليات الإسقاط (Projection) لتحويل الأبعاد الثلاثية إلى ثنائية، وحسابات الإضاءة ثلاثية الأبعاد، هي أمور خاصة بالرسومات ثلاثية الأبعاد فقط ولا وجود لها في الرسومات ثنائية الأبعاد."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 81,
+    "q": "In the camera analogy for 3D viewing, choosing a camera lens or adjusting the zoom corresponds to\nwhich transformation?",
+    "opts": [
+      "Viewing transformation",
+      "Modeling transformation",
+      "Projection transformation",
+      "Viewport transformation"
+    ],
+    "ans": "c",
+    "page": 15,
+    "exp": {
+      "en": "Choosing the lens or zoom in the camera analogy determines how the 3D scene is projected onto the 2D film plane (view plane), which corresponds to the projection transformation.\nIncorrect:\n- (a) Viewing transformation positions the camera in the world.\n- (b) Modeling transformation positions objects in the world.\n- (d) Viewport transformation maps the projected image to screen pixels.",
+      "ar": "هنا، اختيار عدسة الكاميرا أو تقريب المشهد (Zoom) يحدد كيفية إسقاط المشهد ثلاثي الأبعاد على سطح ثنائي الأبعاد، وهو ما يُعرف بتحويل الإسقاط (Projection Transformation)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 82,
+    "q": "Which type of projection transfers points from an object's surface onto the view plane along parallel\nlines, making it ideal for CAD and architectural drawings?",
+    "opts": [
+      "Perspective Projection",
+      "Parallel Projection",
+      "Converging Projection",
+      "Distorted Projection"
+    ],
+    "ans": "b",
+    "page": 15,
+    "exp": {
+      "en": "Parallel projection projects coordinates along parallel lines, preserving relative proportions and parallel lines, which is essential for accurate CAD and architectural drawings.\nIncorrect:\n- (a) Perspective projection uses converging projection lines, which distort sizes based on distance.\n- (c) and (d) are not standard terms for these CAD-focused projections.",
+      "ar": "هذا يعني أن الإسقاط المتوازي (Parallel Projection) ينقل النقاط خطوطاً متوازية إلى مستوي العرض، مما يحافظ على الأبعاد الحقيقية للأشياء، وهو مثالي للرسم الهندسي والمعماري."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 83,
+    "q": "Which of the following characteristics uniquely distinguishes perspective projection from parallel\nprojection?",
+    "opts": [
+      "Objects farther from the viewing position are displayed smaller than closer objects of the same size.",
+      "Projector lines from the object surface extend perfectly parallel to each other.",
+      "It completely eliminates the need for establishing a view-up vector.",
+      "It is primarily utilized for precise CAD engineering and architectural drawings."
+    ],
+    "ans": "a",
+    "page": 15,
+    "exp": {
+      "en": "Perspective projection mimics human vision where objects appear smaller the farther they are from the viewpoint (known as perspective foreshortening). Parallel projection maintains constant object size regardless of distance.\nIncorrect:\n- (b) describes parallel projection.\n- (c) is false because perspective projection still needs a view-up vector.\n- (d) describes parallel projection.",
+      "ar": "هنا، ما يميز الإسقاط المنظوري (Perspective) هو محاكاة العين البشرية؛ حيث تظهر الأجسام البعيدة أصغر حجماً مقارنة بالأجسام القريبة ذات الحجم المماثل."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 84,
+    "q": "When utilizing depth cueing in a wireframe display, how does the system visually convey that a line\nsegment is farther away from the viewer?",
+    "opts": [
+      "By projecting the segment along perfectly orthogonal lines to the view plane.",
+      "By decreasing the brightness/intensity of the line segment.",
+      "By increasing the line thickness of the segment.",
+      "By shifting the segment's coordinates directly into device space."
+    ],
+    "ans": "b",
+    "page": 15,
+    "exp": {
+      "en": "Depth cueing highlights depth by decreasing the brightness or intensity of lines as they get farther from the viewer, making them blend into the background.\nIncorrect:\n- (a), (c), and (d) do not describe depth cueing visual cues.",
+      "ar": "هذا يعني أنه في ميزة تلميح العمق (Depth Cueing)، يتم تقليل سطوع أو شدة ألوان الخطوط البعيدة لتظهر باهتة مقارنة بالخطوط القريبة، مما يمنح إيحاءً بالعمق."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 85,
+    "q": "Which sequence correctly traces the coordinate transitions in the general 3D transformation pipeline?",
+    "opts": [
+      "Modeling → Viewing → World → Projection → Device → Normalized",
+      "World → Modeling → Viewing → Normalized → Projection → Device",
+      "Modeling → World → Viewing → Projection → Normalized → Device",
+      "Viewing → Modeling → World → Normalized → Projection → Device"
+    ],
+    "ans": "c",
+    "page": 15,
+    "exp": {
+      "en": "The standard 3D pipeline transitions coordinates from Local/Model Space to World Space, then to Viewing/Camera Space, then to Projection Space, then to Normalized Device Coordinates (NDC), and finally to Device/Screen Coordinates.\nIncorrect:\n- (a), (b), and (d) place these transformation spaces in the incorrect chronological order.",
+      "ar": "هنا، يتبع مسار التحويل ثلاثي الأبعاد ترتيباً منطقياً: تبدأ من مساحة النمذجة (Modeling) ثم العالم (World) ثم العرض/الكاميرا (Viewing) ثم الإسقاط (Projection) ثم الموحدة (Normalized) وأخيراً شاشة العرض (Device)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 86,
+    "q": "The view plane, projection plane, is mathematically perpendicular to which viewing coordinate axis?",
+    "opts": [
+      "\\(x\\) axis",
+      "\\(y\\) axis",
+      "\\(z\\) axis",
+      "The homogeneous \\(h\\) axis"
+    ],
+    "ans": "c",
+    "page": 16,
+    "exp": {
+      "en": "In viewing coordinates, the view plane is perpendicular to the \\(z_{view}\\) axis, which represents the depth/look direction.\nIncorrect:\n- (a) and (b) represent the horizontal and vertical axes of the view plane, respectively.\n- (d) is the homogeneous scaling factor.",
+      "ar": "هذا يعني أن مستوي العرض (View Plane) يكون متعامداً دائماً مع المحور \\(z\\) الخاص بنظام إحداثيات الرؤية، والذي يمثل اتجاه عمق النظر للكاميرا."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 87,
+    "q": "What is the single strict configuration restriction applied to the View-Up Vector \\(V\\)?",
+    "opts": [
+      "It must be exactly equal to (1, 1, 1)",
+      "It can be in any direction except it cannot be parallel to the normal vector \\(N\\)",
+      "It must always point to the origin (0, 0, 0)",
+      "It must be perpendicular to the x-axis only"
+    ],
+    "ans": "b",
+    "page": 16,
+    "exp": {
+      "en": "The View-Up Vector \\(V\\) establishes the 'up' direction. If it is parallel to the normal vector \\(N\\) (the camera's viewing direction), the cross product cannot resolve the horizontal \\(x_{view}\\) axis, making orientation undefined.\nIncorrect:\n- (a) and (c) are unnecessarily restrictive.\n- (d) is not a general restriction.",
+      "ar": "هنا، يمكن توجيه متجه الأعلى (View-Up Vector) في أي اتجاه باستثناء أن يكون موازياً لمتجه الناظم \\(N\\) (اتجاه الكاميرا)، وإلا فلن نتمكن من تحديد جهة اليمين واليسار رياضياً."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 88,
+    "q": "If a system uses an orthographic projection pipeline, how do the projector lines interact with the\nprojection surface?",
+    "opts": [
+      "The projector lines are completely orthogonal to the projection surface.",
+      "The projector lines alter their relative angles depending on the distance of the object.",
+      "The projector lines intersect at a single point located directly on the view plane.",
+      "The projector lines converge at the viewing origin position behind the view plane."
+    ],
+    "ans": "a",
+    "page": 16,
+    "exp": {
+      "en": "Orthographic projection is a type of parallel projection where the projection rays (projectors) are perpendicular (orthogonal) to the projection plane.\nIncorrect:\n- (b), (c), and (d) describe features of perspective projection or other non-orthogonal viewing mappings.",
+      "ar": "هذا يعني أنه في الإسقاط الإملائي (Orthographic Projection)، تسقط خطوط الإسقاط بشكل عمودي (بزاوية 90 درجة) تماماً على مستوي العرض ثنائي الأبعاد."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 89,
+    "q": "In a 3D scene, what are the objects clipped against to remove parts outside the visible area?",
+    "opts": [
+      "A flat 2D rectangular window only",
+      "An enclosed volume of space defined by a set of clipping planes",
+      "A single 1D pixel coordinate",
+      "The origin point (0, 0, 0)"
+    ],
+    "ans": "b",
+    "page": 16,
+    "exp": {
+      "en": "In 3D graphics, objects are clipped against a 3D viewing volume (view frustum) bounded by six clipping planes (near, far, left, right, top, bottom).\nIncorrect:\n- (a) only applies to 2D clipping.\n- (c) and (d) are single coordinate positions, not volumes.",
+      "ar": "هنا، يتم قص الكائنات في المشاهد ثلاثية الأبعاد بناءً على حجم هندسي مغلق (يسمى حجم العرض) محاط بستة مستويات قص (أعلى، أسفل، يمين، يسار، قريب، بعيد)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 90,
+    "q": "The world-coordinate position \\(P_0\\) selected as the viewing origin is commonly referred to as the:",
+    "opts": [
+      "Look-at point",
+      "Viewpoint / eye / camera position",
+      "View-up vector",
+      "Device pixel origin"
+    ],
+    "ans": "b",
+    "page": 16,
+    "exp": {
+      "en": "The viewing origin \\(P_0\\) (or eye point) defines where the camera is physically positioned in the world space.\nIncorrect:\n- (a) Look-at point is the target the camera is pointing toward.\n- (c) View-up vector defines the camera's upward tilt.\n- (d) Device pixel origin refers to screen space.",
+      "ar": "هذا يعني أن النقطة \\(P_0\\) المحددة كأصل نظام إحداثيات الرؤية تمثل موقع الكاميرا أو عين الناظر (Viewpoint) في الفضاء الافتراضي."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 91,
+    "q": "Which vector is explicitly used to establish and define the positive direction for the \\(y\\) axis, the “up” view direction of the camera?",
+    "opts": [
+      "The View-Plane Normal Vector \\(N\\)",
+      "The View-Up Vector \\(V\\)",
+      "The Translation Vector \\(T\\)",
+      "The Look-at Vector \\(P\\)"
+    ],
+    "ans": "b",
+    "page": 16,
+    "exp": {
+      "en": "The View-Up Vector \\(V\\) is used to define the upward direction of the camera, which is projected onto the view plane to compute the positive \\(y_{view}\\) axis.\nIncorrect:\n- (a) Normal Vector \\(N\\) defines the camera's forward look axis.\n- (c) Translation Vector is for moving coordinates.\n- (d) Look-at Vector represents the target point.",
+      "ar": "هنا، يتم استخدام متجه الأعلى (View-Up Vector) لتحديد التوجيه الرأسي للكاميرا، والذي يستخرج منه الاتجاه الموجب للمحور الصادي \\(y_{view}\\)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 92,
+    "q": "The View-Plane Normal Vector \\(N\\) defines the orientation of the view plane. Vector \\(N\\) is calculated along the line starting from:",
+    "opts": [
+      "The origin to the maximum screen pixel",
+      "The reference point \\(P_{ref}\\), look-at point, to the viewing origin \\(P_0\\)",
+      "The x-axis to the y-axis",
+      "The view-up vector to the origin"
+    ],
+    "ans": "b",
+    "page": 16,
+    "exp": {
+      "en": "The normal vector \\(N\\) is calculated as the vector from the look-at target reference point \\(P_{ref}\\) to the camera eye position \\(P_0\\): \\(N = P_0 - P_{ref}\\).\nIncorrect:\n- (a), (c), and (d) are incorrect math formulas for calculating the viewing normal vector.",
+      "ar": "هذا يعني أن متجه الناظم لمستوي العرض \\(N\\) يُحسب عن طريق طرح نقطة الهدف التي تنظر إليها الكاميرا \\(P_{ref}\\) من موقع الكاميرا نفسها \\(P_0\\) (أي: \\(N = P_0 - P_{ref}\\))."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 93,
+    "q": "What is the directional relationship between the literal viewing direction of the camera and the normal vector \\(N\\)?",
+    "opts": [
+      "The viewing direction is exactly the same as the direction of \\(N\\)",
+      "The viewing direction is opposite to the direction of \\(N\\)",
+      "The viewing direction is perpendicular to \\(N\\)",
+      "There is no mathematical relationship"
+    ],
+    "ans": "b",
+    "page": 17,
+    "exp": {
+      "en": "The viewing direction points from the camera to the scene (forward), whereas the normal vector \\(N\\) is defined from the target back to the camera. Thus, the viewing direction is opposite to \\(N\\).\nIncorrect:\n- (a) would mean looking backward.\n- (c) would mean looking sideways.\n- (d) is false as they are collinear.",
+      "ar": "هنا، يكون اتجاه النظر الفعلي للكاميرا معاكساً تماماً لاتجاه متجه الناظم \\(N\\)؛ لأن الناظم يتجه من الهدف إلى الكاميرا بينما النظر يكون من الكاميرا إلى الهدف."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 94,
+    "q": "In a perspective projection, object coordinate positions are transferred to projection coordinates along\nlines that:",
+    "opts": [
+      "Stay perfectly parallel to each other forever",
+      "Converge to a single point behind the view plane",
+      "Move horizontally only along the x-axis",
+      "Divide by the value of the view-up vector"
+    ],
+    "ans": "b",
+    "page": 17,
+    "exp": {
+      "en": "In perspective projection, all projection lines (projectors) pass through a single point called the center of projection (or projection reference point), converging there.\nIncorrect:\n- (a) describes parallel projection.\n- (c) and (d) are mathematically incorrect descriptions of perspective projection behavior.",
+      "ar": "هذا يعني أنه في الإسقاط المنظوري، تلتقي جميع خطوط الإسقاط وتتقارب نحو نقطة واحدة مشتركة تسمى مركز الإسقاط (Center of Projection)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 95,
+    "q": "What is the fundamental problem that texture mapping solves in 3D computer graphics?",
+    "opts": [
+      "Vertices cannot be lit properly without pixel coordinates.",
+      "Modeling microscopic details using pure geometry is computationally intractable and overwhelms",
+      "GPUs can only render 2D shapes unless a 3D texture is applied.",
+      "Polygons lose their shape when viewed from an arbitrary distance."
+    ],
+    "ans": "b",
+    "page": 17,
+    "exp": {
+      "en": "Modeling complex surface details (like wood grain, brick patterns, or skin pores) using pure geometry (vertices/polygons) is computationally expensive. Texture mapping solves this by mapping flat 2D images onto simple 3D shapes.\nIncorrect:\n- (a) is wrong because vertex lighting works without textures.\n- (c) is false because GPUs render 3D meshes without textures.\n- (d) is wrong because polygons preserve their relative geometry when viewed from different distances.",
+      "ar": "هنا، تحل عملية إسقاط الأنسجة (Texture Mapping) مشكلة التكلفة الحسابية العالية؛ فبدلاً من تمثيل التفاصيل الصغيرة والمعقدة (مثل نقوش الخشب أو الطوب) بنمذجة ملايين المضلعات الهندسية، نقوم بلصق صورة ثنائية الأبعاد على سطح هندسي بسيط."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 96,
+    "q": "What is the key insight of Texture Mapping in computer graphics?",
+    "opts": [
+      "It increases the number of polygons in a mesh.",
+      "It adds visual richness without increasing geometric complexity.",
+      "It converts 3D coordinates back into 2D vector lines.",
+      "It turns off the GPU's specialized units."
+    ],
+    "ans": "b",
+    "page": 17,
+    "exp": {
+      "en": "Texture mapping allows rendering highly detailed, visually rich objects (like wood, marble, or decals) while keeping the underlying polygonal model simple and fast to render.\nIncorrect:\n- (a) is false because it does not alter polygon counts.\n- (c) and (d) are nonsensical.",
+      "ar": "هذا يعني أن الفكرة الأساسية لإسقاط الأنسجة هي إضافة تفاصيل بصرية غنية وواقعية على المجسمات دون الحاجة إلى زيادة عدد المضلعات أو تعقيد البنية الهندسية للمجسم."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 97,
+    "q": "A texture is defined as a 1D, 2D, or 3D array of texture elements. Individual elements of a texture are\ncalled:",
+    "opts": [
+      "Pixels",
+      "Vectors",
+      "Texels",
+      "Points"
+    ],
+    "ans": "c",
+    "page": 17,
+    "exp": {
+      "en": "The individual elements or pixels of a texture image are called texture elements, or 'texels.'\nIncorrect:\n- (a) Pixels are screen display elements.\n- (b) and (d) are general geometry/math terms.",
+      "ar": "هنا، تسمى العناصر أو النقاط الفردية المكونة لملف النسيج (Texture) بـ \"التكسلات\" (Texels)، وهي اختصار لـ (Texture Elements) للتمييز بينها وبين بكسلات الشاشة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 98,
+    "q": "Which type of texture is typically dedicated to applications like environment mapping and skyboxes?",
+    "opts": [
+      "1D Textures",
+      "3D Volume Textures",
+      "Cube Maps",
+      "2D Mipmaps"
+    ],
+    "ans": "c",
+    "page": 17,
+    "exp": {
+      "en": "Cube maps consist of six square textures forming the faces of a cube, which is the standard structure used for environment mapping, skyboxes, and reflections.\nIncorrect:\n- (a), (b), and (d) do not represent the 6-sided layout required for environment maps.",
+      "ar": "هذا يعني أن خريطة المكعب (Cube Map)، والتي تتكون من 6 صور تمثل أوجه مكعب محيط بالمشهد، هي التقنية المستخدمة لمحاكاة الانعكاسات البيئية وصناديق السماء (Skyboxes)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 99,
+    "q": "3D Textures (Volume textures) are commonly utilized in which of the following applications?",
+    "opts": [
+      "Simple gradients and lookup tables",
+      "Medical imaging, fire/smoke, and terrain voxels",
+      "Flat text on UI objects",
+      "2D retro pixel art"
+    ],
+    "ans": "b",
+    "page": 18,
+    "exp": {
+      "en": "3D textures store volumetric data (along \\(x\\), \\(y\\), and \\(z\\)), making them ideal for rendering volumetric objects like CT scans, smoke, fire, or voxel-based terrain.\nIncorrect:\n- (a) is best handled by 1D/2D textures.\n- (c) and (d) are 2D applications.",
+      "ar": "هنا، تُسخّر الأنسجة ثلاثية الأبعاد (3D/Volume Textures) لتمثيل البيانات الحجمية في فضاء ثلاثي الأبعاد، وهو أمر ضروري للتصوير الطبي (أشعة مقطعية) ومحاكاة الدخان والنار والتضاريس الحجمية (Voxels)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 100,
+    "q": "Parametric texture coordinates, usually denoted as \\((u, v)\\), are mapped within which standard range?",
+    "opts": [
+      "\\([-1,1]^2\\)",
+      "\\([0,1]^2\\)",
+      "\\([0,255]^2\\)",
+      "\\(\\text{Unlimited infinite ranges}\\)"
+    ],
+    "ans": "b",
+    "page": 18,
+    "exp": {
+      "en": "Parametric texture coordinates \\((u, v)\\) are normalized to the range \\([0, 1] \\times [0, 1]\\) (often denoted as \\([0, 1]^2\\)) to be independent of the physical pixel size of the texture image.\nIncorrect:\n- (a) covers negative coordinates.\n- (c) corresponds to 8-bit color channels.\n- (d) is not the standard normalized coordinate range.",
+      "ar": "هذا يعني أن إحداثيات النسيج \\((u, v)\\) يتم توحيدها وتطبيعها لتكون دائماً ضمن النطاق القياسي من 0 إلى 1 (أي \\([0, 1]^2\\))، مما يجعلها مستقلة عن الأبعاد الفعلية للبكسلات في الصورة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 101,
+    "q": "Which texture wrapping mode is commonly used for tiled floors and brick walls?",
+    "opts": [
+      "Clamp",
+      "Border Color",
+      "Repeat / Wrap",
+      "Bilinear"
+    ],
+    "ans": "c",
+    "page": 18,
+    "exp": {
+      "en": "The 'Repeat' (or Wrap) mode repeats the texture pattern across the surface when texture coordinates exceed the \\([0, 1]\\) range, which is perfect for tiling floors, walls, and terrains.\nIncorrect:\n- (a) and (b) stretch the edges or fill with a solid color rather than tiling.\n- (d) is a filtering method, not a wrapping mode.",
+      "ar": "هنا، يُستخدم وضع التكرار (Repeat/Wrap) عندما تتجاوز الإحداثيات النطاق [0, 1] لتكرار نفس النمط مراراً وتكراراً، وهو الخيار الافتراضي لتغطية أسطح مثل الأرضيات المبلطة أو جدران الطوب."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 102,
+    "q": "The wrapping mode that samples the boundary texel values for any coordinates outside the [0, 1]\nrange is called:",
+    "opts": [
+      "Repeat",
+      "Mirror",
+      "Clamp",
+      "Mipmap"
+    ],
+    "ans": "c",
+    "page": 18,
+    "exp": {
+      "en": "'Clamp' (specifically clamp-to-edge) pins texture coordinates outside \\([0, 1]\\) to the edges, resulting in the border texels being stretched across the remaining space.\nIncorrect:\n- (a) repeats the texture.\n- (b) mirrors the texture pattern.\n- (d) is a pre-filtering technique, not a wrapping mode.",
+      "ar": "هذا يعني أن وضع التثبيت (Clamp) يقوم بتثبيت أي إحداثيات تقع خارج النطاق [0, 1] على حافة النسيج، مما يؤدي إلى تمديد آخر بكسل على الحدود لتغطية بقية المساحة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 103,
+    "q": "Texture “Magnification” occurs when a texture is smaller than the screen footprint, meaning:",
+    "opts": [
+      "A single pixel covers multiple texels.",
+      "A single texel covers multiple screen pixels, requiring interpolation.",
+      "A single screen pixel covers multiple texels, requiring filtering.",
+      "The geometric complexity is doubled."
+    ],
+    "ans": "b",
+    "page": 18,
+    "exp": {
+      "en": "Magnification happens when you zoom in on a textured surface, meaning a single texel must be stretched to cover multiple screen pixels, requiring interpolation (like bilinear filtering) to fill in details.\nIncorrect:\n- (a) and (c) describe texture minification, where the texture is larger than the screen footprint.\n- (d) is unrelated to texturing.",
+      "ar": "هنا، يحدث تكبير النسيج (Magnification) عندما نقترب جداً من الكائن، بحيث يصبح التكسل الواحد أكبر من بكسل الشاشة، مما يتطلب عملية استكمال داخلي (Interpolation) لملء الفجوات."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 104,
+    "q": "Texture “Minification” happens when a texture is larger than the screen footprint, meaning:",
+    "opts": [
+      "A single screen pixel covers multiple texels, requiring filtering.",
+      "The UV coordinates become negative.",
+      "A single texel covers multiple screen pixels, requiring interpolation.",
+      "The image turns entirely white."
+    ],
+    "ans": "a",
+    "page": 18,
+    "exp": {
+      "en": "Minification occurs when a textured object is far away, meaning a single screen pixel covers a wide area containing multiple texels, requiring filtering (like mipmapping) to prevent aliasing.\nIncorrect:\n- (b) and (d) are false.\n- (c) describes magnification.",
+      "ar": "هذا يعني أن تصغير النسيج (Minification) يحدث عندما يكون الكائن بعيداً، وبالتالي يغطي بكسل الشاشة الواحد مساحة تحتوي على عدة تكسلات، مما يتطلب تقنيات تصفية (Filtering) لتجنب التشوه (Aliasing)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 105,
+    "q": "Which statement accurately describes Nearest-Neighbor, Point Sampling, filtering?",
+    "opts": [
+      "It requires 4 texel samples per look-up and yields the smoothest quality.",
+      "It calculates a weighted average based on fractional positioning.",
+      "It is the fastest filtering method but results in blocky artifacts and poor quality under",
+      "It uses area averaging across multiple pre-filtered mipmap tiers."
+    ],
+    "ans": "c",
+    "page": 18,
+    "exp": {
+      "en": "Nearest-neighbor interpolation (point sampling) simply selects the closest single texel to the UV coordinates. It is highly efficient but causes pixelated/blocky artifacts under magnification.\nIncorrect:\n- (a) and (b) describe bilinear filtering.\n- (d) describes mipmapping with trilinear/anisotropic filtering.",
+      "ar": "هنا، ترشيح الجار الأقرب (Nearest-Neighbor) هو أسرع طرق التصفية كونه يأخذ قيمة التكسل الأقرب مباشرة، لكنه ينتج مظهراً مكعباً ومكسراً (Blocky) عند تقريب الكاميرا."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 106,
+    "q": "Bilinear filtering eliminates blockiness by taking a weighted average of how many nearest texels?",
+    "opts": [
+      "1 texel",
+      "2 texels",
+      "4 texels",
+      "8 texels"
+    ],
+    "ans": "c",
+    "page": 19,
+    "exp": {
+      "en": "Bilinear filtering samples the \\(2 \\times 2\\) grid of texels surrounding the target coordinate (a total of 4 texels) and performs a weighted average based on distance.\nIncorrect:\n- (a) is nearest-neighbor.\n- (b) is 1D linear filtering.\n- (d) is used in trilinear filtering (which queries two mipmap levels, 4 texels each).",
+      "ar": "هذا يعني أن الترشيح ثنائي الخطي (Bilinear Filtering) يقوم بأخذ متوسط مرجح لأربعة تكسلات مجاورة لإنشاء انتقال ناعم وإزالة المظهر المكسر والمكعب عند التكبير."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 107,
+    "q": "Trilinear filtering specifically resolves which artifact that Bilinear filtering leaves behind?",
+    "opts": [
+      "Blocky pixel-art scaling under high magnification.",
+      "Sudden “popping” transitions between different mipmap levels, LOD.",
+      "Higher bandwidth costs on mobile device architectures.",
+      "Stretching textures across sharp diagonal viewing angles."
+    ],
+    "ans": "b",
+    "page": 19,
+    "exp": {
+      "en": "Bilinear filtering within mipmaps causes visible lines or sudden popping transitions where the renderer switches between mipmap levels. Trilinear filtering solves this by linearly interpolating between two adjacent mipmap levels.\nIncorrect:\n- (a) is resolved by bilinear/bicubic filtering.\n- (c) represents a disadvantage of trilinear filtering, not an artifact it resolves.\n- (d) is resolved by anisotropic filtering.",
+      "ar": "هنا، يحل الترشيح ثلاثي الخطي (Trilinear Filtering) مشكلة ظهور خطوط فاصلة أو حدوث انتقال مفاجئ وملاحظ (Popping) للعين عند التنقل بين مستويات الـ Mipmaps المختلفة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 108,
+    "q": "Trilinear filtering fetches how many total texel samples to eliminate “popping” artifacts between\nadjacent mipmap levels?",
+    "opts": [
+      "1 sample",
+      "4 samples",
+      "8 samples",
+      "16 samples"
+    ],
+    "ans": "c",
+    "page": 19,
+    "exp": {
+      "en": "Trilinear filtering performs bilinear filtering on two adjacent mipmap levels (4 texels from level \\(d\\) and 4 texels from level \\(d+1\\)), requiring a total of 8 texel samples.\nIncorrect:\n- (a) is point sampling.\n- (b) is bilinear filtering.\n- (d) is typical for anisotropic filtering.",
+      "ar": "هذا يعني أن الترشيح ثلاثي الخطي يسحب 8 عينات تكسل إجمالاً (4 عينات من مستوى الـ Mipmap الأول، و4 عينات من المستوى المجاور له) ثم يقوم بدمجها للحصول على انتقال ناعم."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 109,
+    "q": "What is the core solution provided by “Mipmapping” to avoid aliasing on distant surfaces?",
+    "opts": [
+      "Increasing the lighting calculations dynamically.",
+      "Pre-filtering the texture into a chain of progressively smaller resolution levels.",
+      "Converting 2D textures into 3D cubes.",
+      "Forcing the screen to render fewer pixels."
+    ],
+    "ans": "b",
+    "page": 19,
+    "exp": {
+      "en": "Mipmapping precalculates downsampled versions of the texture (e.g., \\(256\\times256\\), \\(128\\times128\\), \\(64\\times64\\), ...). The GPU automatically uses the level matching the screen footprint, eliminating high-frequency details that cause aliasing/shimmering.\nIncorrect:\n- (a), (c), and (d) do not describe how mipmaps work.",
+      "ar": "هنا، تقوم تقنية الـ Mipmapping بتجهيز وتصغير الصورة الأصلية مسبقاً إلى سلسلة من الصور ذات دقات متناقصة تدريجياً، ليستخدم كرت الشاشة الحجم المناسب منها حسب بعد الكائن لتفادي التشوه."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 110,
+    "q": "What is the approximate additional memory storage overhead required to store a complete mipmap\nchain?",
+    "opts": [
+      "~0%, no extra memory",
+      "~33% more memory than the original texture",
+      "~100%, doubles the memory",
+      "~300% more memory"
+    ],
+    "ans": "b",
+    "page": 19,
+    "exp": {
+      "en": "A full mipmap chain adds: \\(\\frac{1}{4} + \\frac{1}{16} + \\frac{1}{64} + \\dots \\approx \\frac{1}{3}\\) (or about \\(33.33\\%\\)) more memory than the original texture. This is calculated using a geometric series sum.\nIncorrect:\n- (a), (c), and (d) are mathematically incorrect; the geometric series sum for 2D mipmaps converges to exactly one-third of the base texture size.",
+      "ar": "هذا يعني أن تخزين سلسلة الـ Mipmaps بالكامل يتطلب زيادة تقارب ثلث المساحة الأصلية فقط (أي حوالي \\(33\\%\\))، وذلك لأن مجموع مساحات الصور المصغرة هندسياً يساوي ثلث مساحة الصورة الأساسية."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 111,
+    "q": "Storing per-vertex attributes (position, normal, color, texture) in a single interleaved array format\n[V0.x, V0.y, V0.z, V0.nx, V0.ny, V0.nz, ...] is called:",
+    "opts": [
+      "Structure of Arrays (SoA)",
+      "Array of Structures (AoS)",
+      "Index Buffer Object (IBO)",
+      "Hierarchical Scene Graph"
+    ],
+    "ans": "b",
+    "page": 19,
+    "exp": {
+      "en": "Array of Structures (AoS) groups all attributes of a single vertex together into a single struct/structure, and stores them in a single array.\nIncorrect:\n- (a) Structure of Arrays (SoA) stores all positions in one array, all normals in another array, etc.\n- (c) and (d) represent indexing and scene representation frameworks, not vertex layout patterns.",
+      "ar": "هنا، يُطلق على تخزين جميع خصائص نقطة واحدة (موقع، ناظم، لون، إحداثي نسيج) متتالية في الذاكرة اسم \"مصفوفة الهياكل\" (AoS)، مما يحسن من كفاءة قراءة البيانات المخزنة معاً في ذاكرة التخزين المؤقت."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 112,
+    "q": "Which representation scheme defines objects algorithmically using structures like fractals or L-\nsystems?",
+    "opts": [
+      "Vector Representation",
+      "Raster Representation",
+      "Procedural Representation",
+      "Boundary Representation"
+    ],
+    "ans": "c",
+    "page": 19,
+    "exp": {
+      "en": "Procedural representations define 3D shapes or textures using algorithms (such as fractals, L-systems, or noise functions) rather than storing explicit geometric databases.\nIncorrect:\n- (a) and (b) represent vector or pixel/voxel databases.\n- (d) represents explicit surface boundary databases.",
+      "ar": "هذا يعني أن التمثيل الإجرائي (Procedural) هو الأسلوب الذي يُعَرِّف المجسمات والأنماط خوارزمياً (مثل الكسوريات fractals أو أنظمة L-systems) بدلاً من كتابة وحفظ نقاطها بالتفصيل."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 113,
+    "q": "What is the primary purpose of using Index Buffer Objects, IBO / EBO, in mesh rendering?",
+    "opts": [
+      "To apply lighting effects to fragments.",
+      "To reduce memory footprint by avoiding redundant vertex data and reusing shared vertices.",
+      "To change the winding order of triangles.",
+      "To calculate the projection matrix."
+    ],
+    "ans": "b",
+    "page": 20,
+    "exp": {
+      "en": "Index Buffer Objects (IBO) store integer indices pointing to vertices in the Vertex Buffer Object. This avoids duplicate vertex data (since adjacent triangles share vertices), reducing GPU memory usage and improving post-vertex shading cache hits.\nIncorrect:\n- (a), (c), and (d) are unrelated to vertex indexing.",
+      "ar": "هنا، تُسخّر مخازن الفهارس (IBO) للسماح للمثلثات بمشاركة النقاط المتجاورة وتجنب تكرار بيانات النقطة نفسها في الذاكرة، مما يقلل بشكل كبير من استهلاك كرت الشاشة للذاكرة ويسرع المعالجة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 114,
+    "q": "Complete the sentence: Boundary Representations (B-reps) describe objects by their enclosing\nsurfaces, whereas Space-Partitioning Representations describe objects by:",
+    "opts": [
+      "Deleting the interior completely.",
+      "Dividing space into regions to capture interior properties (e.g., Voxels).",
+      "Converting 3D assets to 2D vector lines.",
+      "Using only a single floating-point vertex."
+    ],
+    "ans": "b",
+    "page": 20,
+    "exp": {
+      "en": "Space-partitioning representations (such as Voxels, octrees, or BSP trees) represent a 3D object by dividing the 3D space into smaller sub-regions to explicitly define what occupies the interior volume.\nIncorrect:\n- (a) is wrong because space-partitioning preserves the interior.\n- (c) and (d) do not describe space-partitioning schemes.",
+      "ar": "هذا يعني أنه بينما تصف نماذج الحدود الخارجية (B-reps) الأجسام عن طريق القشرة الخارجية فقط، تصف نماذج تقسيم المساحة (Space-Partitioning) الكائنات بتقسيم الفراغ إلى مناطق (مثل الفوكسل) لتمثيل البنية الداخلية بوضوح."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 115,
+    "q": "Which representation is typically used for CAD models and which is commonly used for medical\nimaging?",
+    "opts": [
+      "Space-Partitioning for CAD; Boundary Representations (B-reps) for Medical",
+      "Boundary Representations (B-reps) for CAD; Space-Partitioning for Medical",
+      "Procedural L-systems for CAD; Polygonal lists for Medical",
+      "Spline control patches for CAD; Wireframe edge graphs for Medical"
+    ],
+    "ans": "b",
+    "page": 20,
+    "exp": {
+      "en": "CAD models need precise mathematical definitions of surface boundaries, making B-reps (like NURBS or polygon meshes) ideal. Medical imaging (CT/MRI scans) requires representing internal volume data, making space-partitioning (volume voxels) ideal.\nIncorrect:\n- (a) is reversed.\n- (c) and (d) do not represent standard industrial workflows for CAD and medical imaging.",
+      "ar": "هنا، يُفضل استخدام نماذج الحدود (B-reps) في برامج الهندسة CAD لتحديد السطح الخارجي بدقة، بينما تُستخدم نماذج تقسيم المساحة (Space-Partitioning) في التصوير الطبي لرؤية ما بداخل الجسم (كالأعضاء والعظام)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 116,
+    "q": "What is the main purpose of the generalized Bresenham algorithm?",
+    "opts": [
+      "To improve image quality",
+      "To handle lines in all octants (all directions)",
+      "To use floating-point calculations",
+      "To draw only vertical lines"
+    ],
+    "ans": "b",
+    "page": 20,
+    "exp": {
+      "en": "The basic Bresenham algorithm only handles lines with slopes \\(0 \\le m \\le 1\\) (first octant). The generalized Bresenham algorithm swaps coordinates or increments negatively to draw lines in any direction/octant.\nIncorrect:\n- (a) is wrong because it rasterizes the same line path.\n- (c) is wrong because Bresenham is designed to use pure integer math.\n- (d) is wrong because it handles all directions.",
+      "ar": "هذا يعني أن خوارزمية Bresenham المعممة تم تعديلها لتتمكن من رسم الخطوط في جميع الاتجاهات والثمانيات (Octants) بدلاً من كونها محصورة فقط في الخطوط ذات الميول بين 0 و1."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 117,
+    "q": "Which of the following is NOT a reason why triangles are the preferred geometric primitive for\nmodern GPUs?",
+    "opts": [
+      "They are always guaranteed to be planar, flat.",
+      "They support simple interpolation via barycentric coordinates.",
+      "They naturally represent curved surfaces perfectly without any density approximation.",
+      "Any complex polygon can be triangulated into triangles."
+    ],
+    "ans": "c",
+    "page": 20,
+    "exp": {
+      "en": "Triangles cannot represent curved surfaces perfectly without approximation; they only approximate curves through triangulation density.\nIncorrect:\n- (a), (b), and (d) are actual reasons why triangles are highly preferred in computer graphics hardware pipelines.",
+      "ar": "هنا، لا يمكن للمثلثات تمثيل الأسطح المنحنية بشكل مثالي تماماً دون تقريب مضلع، بل نقوم بتقريبها بزيادة عدد المثلثات الصغيرة، في حين أن بقية الخيارات هي أسباب حقيقية لتفضيل المثلثات."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 118,
+    "q": "What is the main structural advantage of using a Half-Edge data structure over a traditional flat vertex/face list?",
+    "opts": [
+      "It yields a 33% smaller physical memory footprint for rendering storage.",
+      "It completely eliminates the obligation to store per-vertex normal vectors.",
+      "It delivers \\(O(1)\\) runtime navigation loops, allowing fast queries of neighboring faces and adjacent",
+      "It natively rasterizes curved surfaces without relying on triangulation."
+    ],
+    "ans": "c",
+    "page": 20,
+    "exp": {
+      "en": "The Half-Edge data structure stores adjacency information (pointers to next, twin, vertex, face), permitting \\(O(1)\\) constant-time queries for mesh navigation, such as finding adjacent faces or edges.\nIncorrect:\n- (a) is wrong; half-edge structures use significantly more memory than flat lists.\n- (b) and (d) are incorrect.",
+      "ar": "هذا يعني أن ميزة هيكل البيانات 'نصف الضلع' (Half-Edge) تكمن في قدرته على التنقل السريع بين النقاط والأوجه المتجاورة في زمن ثابت \\(O(1)\\) بفضل روابط المؤشرات المخزنة فيه."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 119,
+    "q": "Which acceleration technique skips processing and rendering for triangles that are facing completely\naway from the camera view?",
+    "opts": [
+      "Frustum culling",
+      "Back-face culling",
+      "Occlusion culling",
+      "Level of Detail, LOD"
+    ],
+    "ans": "b",
+    "page": 21,
+    "exp": {
+      "en": "Back-face culling checks the normal of a triangle relative to the camera direction and discards it if it faces away, saving vertex shading and rasterization costs.\nIncorrect:\n- (a) discards objects outside the viewing volume.\n- (c) discards hidden objects behind foreground blockers.\n- (d) swaps model resolutions based on distance.",
+      "ar": "هنا، تقوم تقنية استبعاد الأوجه الخلفية (Back-face Culling) بفحص اتجاه كل مثلث وتفادي معالجة أو رسم المثلثات التي تدير ظهرها للكاميرا لأنها غير مرئية للمستخدم."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 120,
+    "q": "What does Frustum Culling optimize in a graphics engine?",
+    "opts": [
+      "It scales down textures for far away items.",
+      "It skips rendering entire objects that fall completely outside the camera's visible viewing volume,",
+      "It turns wireframes into solid colors.",
+      "It adds extra vertices to objects close to the camera."
+    ],
+    "ans": "b",
+    "page": 21,
+    "exp": {
+      "en": "Frustum culling tests the bounding volume of objects against the camera's view frustum and skips rendering commands entirely for objects outside it.\nIncorrect:\n- (a) describes mipmapping.\n- (c) describes solid shading.\n- (d) describes tessellation or LOD.",
+      "ar": "هذا يعني أن استبعاد مخروط الرؤية (Frustum Culling) يقوم بفحص مواقع المجسمات ويتفادى محاولة رسم أي مجسم يقع بالكامل خارج نطاق رؤية الكاميرا (خارج مخروط الرؤية) لتوفير جهد المعالجة."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 121,
+    "q": "The hardware acceleration technique that swaps high-resolution geometry with simplified, low-\npolygon versions when an object moves far away from the camera is called:",
+    "opts": [
+      "Anisotropic Filtering",
+      "Alpha Blending",
+      "Level of Detail (LOD)",
+      "Vertex Caching"
+    ],
+    "ans": "c",
+    "page": 21,
+    "exp": {
+      "en": "Level of Detail (LOD) optimizes rendering by using simplified meshes with fewer triangles for distant objects, where high geometric detail is not resolvable by the camera.\nIncorrect:\n- (a) is a texture filtering method.\n- (b) is for transparency.\n- (d) is a caching mechanism for vertex shading.",
+      "ar": "هنا، تسمى التقنية التي تقوم باستبدال المجسمات المعقدة ذات الدقة العالية بمجسمات أبسط (عدد مضلعات أقل) عندما يبتعد المجسم عن الكاميرا بـ \"مستوى التفاصيل\" (Level of Detail - LOD)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 122,
+    "q": "If an application discards geometries because they are hidden behind large, solid foreground objects,\nwhich culling mechanism is being used?",
+    "opts": [
+      "Back-face culling",
+      "Frustum culling",
+      "Occlusion culling",
+      "Level of Detail, LOD, adaptation"
+    ],
+    "ans": "c",
+    "page": 21,
+    "exp": {
+      "en": "Occlusion culling discards objects that are inside the view frustum but are completely hidden behind other opaque foreground geometries (occluders).\nIncorrect:\n- (a) is based on the orientation of triangles.\n- (b) is based on whether they are in the camera's view frustum.\n- (d) changes geometry resolution based on distance.",
+      "ar": "هذا يعني أنه إذا قام البرنامج باستبعاد وحذف المجسمات لأنها تقع خلف مجسمات أخرى صلبة وضخمة (مثل جدار يحجب ما خلفه)، فإن التقنية المستخدمة هي \"استبعاد الحجب\" (Occlusion Culling)."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 123,
+    "q": "Which GLUT function is used to register the callback handler responsible for window re-painting and\nrendering graphics inside the screen?",
+    "opts": [
+      "glutInitWindowSize(320, 320);",
+      "glutMainLoop();",
+      "glFlush();",
+      "glutDisplayFunc(display);"
+    ],
+    "ans": "d",
+    "page": 21,
+    "exp": {
+      "en": "`glutDisplayFunc` registers the user's custom function (e.g., `display`) to be executed whenever the window needs to be drawn or repainted.\nIncorrect:\n- (a) sets the initial window size.\n- (b) starts the main event loop.\n- (c) flushes command buffers.",
+      "ar": "هنا، تُستخدم الدالة `glutDisplayFunc` لتسجيل دالة الرسم الخاصة بك (مثل دالة display) وتنبيه المكتبة لتشغيلها في كل مرة تحتاج فيها النافذة لإعادة الرسم أو التحديث."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 124,
+    "q": "Which OpenGL function can be used to set the background color of the rendering window to black?",
+    "opts": [
+      "glMatrixMode(GL_PROJECTION);",
+      "glClear(GL_COLOR_BUFFER_BIT);",
+      "glColor3f(0.0f, 0.0f, 0.0f);",
+      "glClearColor(0.0f, 0.0f, 0.0f, 1.0f);"
+    ],
+    "ans": "d",
+    "page": 21,
+    "exp": {
+      "en": "`glClearColor` defines the clear values (R, G, B, A) used when clearing the color buffer. Specifying `(0.0f, 0.0f, 0.0f, 1.0f)` sets the clear color to black.\nIncorrect:\n- (a) sets the matrix mode.\n- (b) actually performs the clearing using the color set by `glClearColor`.\n- (c) sets the color for subsequent vertex drawings.",
+      "ar": "هذا يعني أن الدالة `glClearColor(0.0f, 0.0f, 0.0f, 1.0f)` تحدد لون مسح الشاشة ليكون الأسود، بينما الدالة `glClear` تقوم بعملية المسح الفعلية مستخدمة هذا اللون."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 125,
+    "q": "Which OpenGL primitive type should be passed to glBegin() to draw separate, independent lines\nfor every pair of vertices?",
+    "opts": [
+      "GL_LINE_STRIP",
+      "GL_LINES",
+      "GL_LINE_LOOP",
+      "GL_POINTS"
+    ],
+    "ans": "b",
+    "page": 22,
+    "exp": {
+      "en": "Passing `GL_LINES` to `glBegin` causes OpenGL to treat every pair of vertices as a single independent line segment.\nIncorrect:\n- (a) `GL_LINE_STRIP` draws connected lines from vertex to vertex.\n- (c) `GL_LINE_LOOP` draws connected lines and closes the loop back to the first vertex.\n- (d) `GL_POINTS` draws individual pixels.",
+      "ar": "هنا، لتوصيل كل نقطتين متتاليتين بخط منفصل تماماً عن الخطوط الأخرى، يجب تمرير الثابت `GL_LINES` إلى الدالة `glBegin()`."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 126,
+    "q": "Which OpenGL function allows you to draw a rectangle directly by specifying its opposite corners\nwithout using glBegin() and glEnd()?",
+    "opts": [
+      "glBegin(GL_QUADS);",
+      "glVertex2f(x, y);",
+      "glLineWidth(2.0f);",
+      "glRectf(x1, y1, x2, y2);"
+    ],
+    "ans": "d",
+    "page": 22,
+    "exp": {
+      "en": "`glRectf(x1, y1, x2, y2)` is a shorthand function in OpenGL that draws a rectangle in the z=0 plane using the opposing corner coordinates `(x1, y1)` and `(x2, y2)` without needing manual vertex declarations.\nIncorrect:\n- (a) and (b) require standard `glBegin`/`glEnd` blocks.\n- (c) sets the thickness of lines.",
+      "ar": "هذا يعني أنه يمكنك رسم مستطيل مباشرة وبأمر واحد دون الحاجة لفتح وإغلاق كتل النقاط باستخدام الدالة `glRectf(x1, y1, x2, y2)` عن طريق إعطاء إحداثيات الركنين المتقابلين."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 127,
+    "q": "Which OpenGL transformation function can cause an object to reflect, mirror effect, if a negative\nfactor is supplied?",
+    "opts": [
+      "glLoadIdentity();",
+      "glRotatef(theta, x, y, z);",
+      "glTranslatef(tx, ty, tz);",
+      "glScalef(sx, sy, sz);"
+    ],
+    "ans": "d",
+    "page": 22,
+    "exp": {
+      "en": "`glScalef(sx, sy, sz)` scales coordinates along the axes. If any scaling factor (e.g., `sx` or `sy`) is negative, it mirrors (reflects) the geometry across that axis.\nIncorrect:\n- (a) resets the matrix.\n- (b) rotates objects.\n- (c) translates objects.",
+      "ar": "هنا، يمكن للدالة `glScalef` أن تعكس المجسم أو تحدث تأثيراً شبيهاً بالمرآة (Reflection) إذا تم تمرير قيم سالبة لعوامل القياس والتحجيم."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 128,
+    "q": "Which OpenGL function is used to copy/duplicate the top matrix in the stack to protect the current\ntransformation state?",
+    "opts": [
+      "glPushMatrix();",
+      "glMatrixMode(GL_MODELVIEW);",
+      "glPopMatrix();",
+      "glLoadMatrix();"
+    ],
+    "ans": "a",
+    "page": 22,
+    "exp": {
+      "en": "`glPushMatrix` duplicates the current matrix and pushes it onto the matrix stack, allowing you to apply temporary transformations and restore the previous state later.\nIncorrect:\n- (b) selects the matrix mode.\n- (c) pops the top matrix off the stack, discarding modifications.\n- (d) replaces the current matrix.",
+      "ar": "هذا يعني أن الدالة `glPushMatrix()` تقوم بنسخ وحفظ المصفوفة الحالية في مكدس المصفوفات لحمايتها، بحيث يمكنك تطبيق تحويلات مؤقتة ثم استعادتها لاحقاً بـ `glPopMatrix()`."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 129,
+    "q": "Which function is used to set up a 2D coordinate clipping window under the GL_PROJECTION\nmatrix mode?",
+    "opts": [
+      "gluLookAt(Ex, Ey, Ez, cx, cy, cz, ux, uy, uz);",
+      "glViewport(x, y, w, h);",
+      "glutInitWindowPosition(x, y);",
+      "gluOrtho2D(xwmin, xwmax, ywmin, ywmax);"
+    ],
+    "ans": "d",
+    "page": 22,
+    "exp": {
+      "en": "`gluOrtho2D(xwmin, xwmax, ywmin, ywmax)` defines a 2D orthographic projection matrix, specifying the boundaries of the 2D world-coordinate clipping window.\nIncorrect:\n- (a) is for 3D camera viewing setups.\n- (b) is for defining the viewport (screen pixels).\n- (c) positions the window on the screen.",
+      "ar": "هنا، لتحديد حدود نافذة القص ثنائية الأبعاد في العالم الافتراضي، نستخدم دالة الإسقاط المتعامد ثنائي الأبعاد `gluOrtho2D(xwmin, xwmax, ywmin, ywmax)`."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 130,
+    "q": "Which OpenGL matrix operation routine is used to set the active matrix mode to handle object\ntransformations and camera tracking parameters?",
+    "opts": [
+      "glMatrixMode(GL_PROJECTION);",
+      "glutPostRedisplay();",
+      "glMatrixMode(GL_MODELVIEW);",
+      "glLoadIdentity();"
+    ],
+    "ans": "c",
+    "page": 22,
+    "exp": {
+      "en": "`glMatrixMode(GL_MODELVIEW)` selects the Modelview matrix, which is dedicated to applying geometric transformations (scaling, rotation, translation) to models and camera/view transformations.\nIncorrect:\n- (a) selects the projection matrix.\n- (b) requests window redisplay.\n- (d) resets the current matrix.",
+      "ar": "هذا يعني أن استدعاء الدالة `glMatrixMode(GL_MODELVIEW)` يجعل العمليات التالية تؤثر على مصفوفة التحويلات والمشاهدة، وهي المصفوفة المسؤولة عن نقل وتدوير وحجم الكائنات وتتبع الكاميرا."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 131,
+    "q": "Which function is used to specify camera parameters in 3D, including eye position, center of interest,\nand the view-up vector?",
+    "opts": [
+      "gluPerspective(fovy, aspect, near, far);",
+      "gluLookAt(Ex, Ey, Ez, cx, cy, cz, Up_x, Up_y, Up_z);",
+      "glFrustum(left, right, bottom, top, near, far);",
+      "glOrtho(left, right, bottom, top, near, far);"
+    ],
+    "ans": "b",
+    "page": 23,
+    "exp": {
+      "en": "`gluLookAt` calculates a viewing matrix based on the eye/camera position, the center/look-at target point, and the up vector direction.\nIncorrect:\n- (a), (c), and (d) define the projection matrix (perspective or orthographic frustum), not camera positioning parameters.",
+      "ar": "هنا، تُستخدم الدالة المساعدة `gluLookAt` لوضع الكاميرا في الفضاء ثلاثي الأبعاد عن طريق تحديد موضع العين، ونقطة الهدف التي تنظر إليها، والمتجه المتجه للأعلى للكاميرا."
+    },
+    "hasImage": false
+  },
+  {
+    "n": 132,
+    "q": "Which function must be called immediately before defining a vertex to map a 2D texture coordinate\nto that vertex?",
+    "opts": [
+      "glEnable(GL_TEXTURE_2D);",
+      "glTexParameteri(...);",
+      "glTexImage2D(...);",
+      "glTexCoord2d(s, t);"
+    ],
+    "ans": "d",
+    "page": 23,
+    "exp": {
+      "en": "`glTexCoord2d(s, t)` (or other variations of `glTexCoord`) sets the current texture coordinate, which is then bound to the subsequent vertex defined by `glVertex`.\nIncorrect:\n- (a) enables 2D texturing.\n- (b) sets texture parameters like filtering.\n- (c) loads a texture image into memory.",
+      "ar": "هذا يعني أنك بحاجة لاستدعاء دالة تحديد إحداثي النسيج `glTexCoord2d(s, t)` مباشرة قبل تعريف النقطة لكي يربط كرت الشاشة النسيج بتلك النقطة بشكل صحيح."
+    },
+    "hasImage": false
+  }
+];
+
+    const lectures = [
+  {
+    "name": "1. Basic Mathematical Concepts",
+    "file": "CG-Lect%231.pdf",
+    "icon": "school",
+    "color": "from-teal-500 to-cyan-600"
+  },
+  {
+    "name": "2. Output Primitives & Line Drawing",
+    "file": "CG-Lect%232.pdf",
+    "icon": "menu_book",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "name": "3. Vector & Matrix Mathematics",
+    "file": "CG-Lect%233.pdf",
+    "icon": "science",
+    "color": "from-purple-500 to-pink-600"
+  },
+  {
+    "name": "4. 2D Transformations",
+    "file": "CG-Lect%234.pdf",
+    "icon": "calculate",
+    "color": "from-orange-500 to-red-600"
+  },
+  {
+    "name": "5. 2D Viewing Pipeline & Clipping",
+    "file": "CG-Lect%235.pdf",
+    "icon": "analytics",
+    "color": "from-indigo-500 to-violet-600"
+  },
+  {
+    "name": "6. 3D Concepts & Transformations",
+    "file": "CG-Lect%236.pdf",
+    "icon": "monitoring",
+    "color": "from-rose-500 to-pink-600"
+  },
+  {
+    "name": "7. 3D Viewing & Projections",
+    "file": "CG-Lect%237.pdf",
+    "icon": "lan",
+    "color": "from-blue-500 to-cyan-600"
+  },
+  {
+    "name": "8. Texturing & Image Mapping",
+    "file": "CG-Lect%238.pdf",
+    "icon": "security",
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "name": "9. Polygon Meshes & Acceleration",
+    "file": "CG-Lect-9.pdf",
+    "icon": "cell_tower",
+    "color": "from-amber-500 to-orange-600"
+  }
+];
+
+    let currentPdf = '';
+    let currentLang = localStorage.getItem('explanation-lang') || 'en';
+    const letters = ['a','b','c','d'];
+
+    function buildQuestions() {
+      const container = document.getElementById('questions-container');
+      container.innerHTML = '';
+      
+      document.getElementById('total-count').textContent = quizData.length;
+      
+      if (quizData.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20 opacity-50">
+            <span class="material-symbols-outlined text-6xl mb-4">edit_note</span>
+            <p class="font-headline text-xl">No questions added yet</p>
+            <p class="text-sm mt-2">Add questions to the quizData array in the code</p>
+          </div>
+        `;
+        return;
+      }
+      
+      quizData.forEach((q, idx) => {
+        const num = String(q.n).padStart(2,'0');
+        const delay = Math.min(idx * 20, 500);
+        
+        const hasImage = q.hasImage || false;
+        let imageHtml = '';
+        if (hasImage) {
+          let imgSrc = '';
+          if (q.n === 46) imgSrc = '46.jpg';
+          else if (q.n === 39) imgSrc = 'q39.jpg';
+          else if (q.n === 77) imgSrc = 'q77.jpg';
+          
+          imageHtml = `
+            <div class="q-image-container">
+              <img src="` + imgSrc + `" alt="Diagram for question ` + q.n + `" class="q-image">
+              <div class="q-image-caption">
+                <span class="material-symbols-outlined text-sm align-middle mr-1">image</span>
+                Figure ` + q.n + `
+              </div>
+            </div>
+          `;
+        }
+        
+        let optsHtml = q.opts.map((opt, oi) => `<label class="option-label relative flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl border border-outline-variant/20 dark:border-db cursor-pointer hover:bg-surface-container-low dark:hover:bg-scl transition-all">
+          <input type="radio" name="q` + q.n + `" value="` + letters[oi] + `" class="w-4 h-4 md:w-5 md:h-5 text-primary focus:ring-primary border-outline-variant bg-transparent accent-[#3D8B8B]">
+          <span class="font-body text-sm md:text-base text-on-surface-variant dark:text-sv font-medium">` + letters[oi] + `) ` + opt + `</span>
+        </label>`).join('');
+        
+        container.innerHTML += `<article class="q-card bg-white dark:bg-card rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 editorial-shadow border border-surface-container-high dark:border-db animate-fade-up" style="animation-delay:` + delay + `ms" data-qnum="` + q.n + `">
+          <div class="flex flex-col gap-4 md:gap-6">
+            <div class="flex justify-between items-start">
+              <span class="font-label text-[10px] md:text-xs font-bold text-secondary dark:text-s uppercase tracking-widest bg-secondary-fixed/30 dark:bg-amber-900/20 px-3 py-1 rounded-full">Question ` + num + `</span>
+            </div>
+            <h3 class="font-headline text-base md:text-xl font-bold text-on-surface dark:text-white leading-snug">` + q.q + `</h3>
+            ` + imageHtml + `
+            <div class="grid grid-cols-1 gap-3 md:gap-4">` + optsHtml + `</div>
+            <div class="flex flex-col gap-3">
+              <div class="answer-feedback hidden" id="feedback-` + q.n + `"></div>
+              <div class="reveal-content" id="reveal-` + q.n + `">
+                <div class="exp-box exp-visible">
+                  <div class="lang-toggle">
+                    <button class="lang-btn ` + (currentLang === 'en' ? 'active' : '') + `" onclick="toggleExplanationLang(` + q.n + `, 'en')">EN</button>
+                    <button class="lang-btn ` + (currentLang === 'ar' ? 'active' : '') + `" onclick="toggleExplanationLang(` + q.n + `, 'ar')">عربي</button>
+                  </div>
+                  <div class="items-start gap-3 flex mt-2">
+                    <span class="material-symbols-outlined text-secondary dark:text-s text-xl flex-shrink-0 mt-1">info</span>
+                    <div class="text-sm md:text-base leading-relaxed text-on-surface-variant dark:text-sv w-full">
+                      <p class="font-bold mb-2 text-secondary dark:text-s">Explanation:</p>
+                      <div class="exp-text ` + (currentLang === 'en' ? 'active' : '') + `" data-lang="en" id="exp-` + q.n + `-en">` + q.exp.en + `</div>
+                      <div class="exp-text ` + (currentLang === 'ar' ? 'active' : '') + `" data-lang="ar" id="exp-` + q.n + `-ar" dir="rtl">` + q.exp.ar + `</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>`;
+      });
+      
+      document.querySelectorAll('input[type="radio"]').forEach(radio => radio.addEventListener('change', handleAnswer));
+      
+      // Render KaTeX math after building questions
+      if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(document.getElementById('questions-container'), {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function toggleExplanationLang(qNum, lang) {
+      currentLang = lang;
+      localStorage.setItem('explanation-lang', lang);
+      
+      const card = document.querySelector(`[data-qnum="${qNum}"]`);
+      card.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', 
+          (lang === 'en' && btn.textContent === 'EN') || 
+          (lang === 'ar' && btn.textContent === 'عربي')
+        );
+      });
+      
+      const enText = document.getElementById(`exp-${qNum}-en`);
+      const arText = document.getElementById(`exp-${qNum}-ar`);
+      
+      if(lang === 'en') {
+        arText.classList.remove('active');
+        setTimeout(() => enText.classList.add('active'), 50);
+      } else {
+        enText.classList.remove('active');
+        setTimeout(() => arText.classList.add('active'), 50);
+      }
+    }
+
+    function handleAnswer(e) {
+      const qNum = parseInt(e.target.name.substring(1));
+      const selected = e.target.value;
+      const qData = quizData.find(q => q.n === qNum);
+      const feedback = document.getElementById(`feedback-${qNum}`);
+      const card = e.target.closest('.q-card');
+      card.querySelectorAll('.option-label').forEach(l => l.classList.remove('correct-answer','incorrect-answer'));
+      const isCorrect = selected === qData.ans;
+      const selectedLabel = e.target.closest('.option-label');
+      if(isCorrect) {
+        selectedLabel.classList.add('correct-answer');
+        feedback.className = 'answer-feedback answer-correct animate-fade-up';
+        feedback.innerHTML = `<div class="flex flex-col items-start gap-2"><span class="font-bold text-primary dark:text-p">✅ Correct!</span><button onclick="revealPart(${qNum})" class="btn-reveal btn-reveal-exp" id="btn-reveal-${qNum}"><span class="material-symbols-outlined text-sm">lightbulb</span>Show Explanation</button></div>`;
+      } else {
+        selectedLabel.classList.add('incorrect-answer');
+        feedback.className = 'answer-feedback answer-incorrect animate-fade-up';
+        feedback.innerHTML = `<div class="flex flex-col items-start gap-2"><span class="font-bold text-error">❌ Incorrect</span><button onclick="revealPart(${qNum}, true)" class="btn-reveal btn-reveal-correct" id="btn-reveal-${qNum}"><span class="material-symbols-outlined text-sm">visibility</span>Show Correct Choice</button></div>`;
+      }
+      feedback.classList.remove('hidden');
+      document.getElementById(`reveal-${qNum}`).style.display = 'none';
+      updateProgress();
+    }
+
+    function revealPart(n, showAnswer = false) {
+      const revealBox = document.getElementById(`reveal-${n}`);
+      const btn = document.getElementById(`btn-reveal-${n}`);
+      const qData = quizData.find(q => q.n === n);
+      if(revealBox) revealBox.style.display = 'block';
+      if(btn) btn.style.display = 'none';
+      if(showAnswer) {
+        const feedback = document.getElementById(`feedback-${n}`);
+        const card = feedback.closest('.q-card');
+        const correctIdx = letters.indexOf(qData.ans);
+        card.querySelectorAll('.option-label')[correctIdx].classList.add('correct-answer');
+        feedback.querySelector('span').innerHTML = `❌ Incorrect — Correct answer: <strong class="text-primary dark:text-p">` + qData.ans.toUpperCase() + `</strong>`;
+      }
+      // Re-render math in explanation if needed
+      if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(revealBox, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function showAllAnswers() { 
+      quizData.forEach(q => { 
+        const card = document.querySelector(`[data-qnum="${q.n}"]`); 
+        if(!card) return; 
+        const correctIdx = letters.indexOf(q.ans); 
+        const labels = card.querySelectorAll('.option-label'); 
+        labels.forEach(l=>l.classList.remove('correct-answer','incorrect-answer')); 
+        labels[correctIdx].classList.add('correct-answer'); 
+        labels[correctIdx].querySelector('input').checked = true; 
+        const feedback = document.getElementById(`feedback-${q.n}`); 
+        feedback.className='answer-feedback answer-correct animate-fade-up'; 
+        feedback.innerHTML=`<span class="font-bold text-primary dark:text-p">✅ Correct Answer: ` + q.ans.toUpperCase() + `</span>`; 
+        feedback.classList.remove('hidden'); 
+        revealPart(q.n); 
+      }); 
+      updateProgress(); 
+    }
+    
+    function hideAllAnswers() { 
+      quizData.forEach(q => { 
+        const card = document.querySelector(`[data-qnum="${q.n}"]`); 
+        if(!card) return; 
+        card.querySelectorAll('.option-label').forEach(l=>l.classList.remove('correct-answer','incorrect-answer')); 
+        card.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false); 
+        const fb = document.getElementById(`feedback-${q.n}`); 
+        fb.classList.add('hidden'); 
+        fb.innerHTML=''; 
+        const rev = document.getElementById(`reveal-${q.n}`); 
+        if(rev) rev.style.display='none'; 
+      }); 
+      updateProgress(); 
+    }
+    
+    function resetQuiz() { 
+      document.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false); 
+      hideAllAnswers(); 
+      updateProgress(); 
+      window.scrollTo({top:0,behavior:'smooth'}); 
+    }
+    
+    function updateProgress() { 
+      const answered = document.querySelectorAll('input[type="radio"]:checked').length; 
+      document.getElementById('answered-count').textContent = answered; 
+      const total = quizData.length || 1;
+      document.getElementById('progress-bar').style.width = `` + ((answered/total)*100) + `%`; 
+    }
+
+    let activeSlideIdx = 0;
+    function buildSlides() {
+      const list = document.getElementById('slides-list');
+      const isMobile = window.innerWidth < 768;
+      list.innerHTML = lectures.map((l,i) => `<div class="slide-item flex items-center gap-4 p-4 rounded-2xl border ` + (i===activeSlideIdx ? 'active-slide border-primary/30 dark:border-primary-fixed-dim/30' : 'border-outline-variant/20 dark:border-db') + ` bg-white dark:bg-card cursor-pointer animate-fade-up transition-all" data-slide-idx="` + i + `" onclick="selectSlide(` + i + `)">
+        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary-fixed-dim/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-xl">` + l.icon + `</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-headline font-bold text-on-surface dark:text-white text-sm md:text-base truncate">` + l.name + `</h3>
+          <p class="text-on-surface-variant dark:text-sv text-xs">PDF Document</p>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          ` + (!isMobile ? `<button onclick="event.stopPropagation();selectSlide(` + i + `)" class="px-4 py-2 ` + (i===activeSlideIdx ? 'bg-primary dark:bg-primary-fixed-dim text-white dark:text-on-primary-fixed' : 'bg-surface-container-low dark:bg-scl text-on-surface-variant dark:text-sv hover:bg-surface-container') + ` rounded-xl text-xs font-semibold btn-press transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">visibility</span>View
+          </button>` : '') + `
+          <button onclick="event.stopPropagation();openPdfNewTab(` + i + `)" class="px-4 py-2 bg-surface-container-low dark:bg-scl text-on-surface-variant dark:text-sv rounded-xl text-xs font-semibold btn-press hover:bg-surface-container dark:hover:bg-sc transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">open_in_new</span><span class="hidden sm:inline">Open</span>
+          </button>
+        </div>
+      </div>`).join('');
+    }
+    
+    function selectSlide(idx) { 
+      activeSlideIdx = idx; 
+      const l = lectures[idx]; 
+      currentPdf = l.file; 
+      buildSlides(); 
+      if(window.innerWidth>=768) { 
+        document.getElementById('pdf-title').textContent = l.name; 
+        document.getElementById('pdf-frame').src = l.file; 
+        document.getElementById('pdf-viewer-wrap').classList.remove('hidden'); 
+        document.getElementById('pdf-viewer-wrap').scrollIntoView({behavior:'smooth',block:'start'}); 
+      } 
+    }
+    
+    function openPdfNewTab(idx) { window.open(lectures[idx].file, '_blank'); }
+    
+    function downloadCurrentPdf() { 
+      if(!currentPdf) return; 
+      const a = document.createElement('a'); 
+      a.href = currentPdf; 
+      a.download = currentPdf.replace('%23', '#'); 
+      a.click(); 
+    }
+    
+    function showSection(section) { 
+      const quizDiv=document.getElementById('quiz-section'), slidesDiv=document.getElementById('slides-section'); 
+      const navQuiz=document.getElementById('nav-quiz'), navSlides=document.getElementById('nav-slides'); 
+      const active=['bg-white','dark:bg-card','shadow-sm','rounded-full','text-primary','dark:text-p','font-bold']; 
+      const inactive=['text-on-surface-variant','dark:text-sv','font-medium']; 
+      if(section==='quiz') { 
+        quizDiv.classList.remove('hidden'); 
+        slidesDiv.classList.add('hidden'); 
+        navQuiz.classList.add(...active); 
+        navQuiz.classList.remove(...inactive); 
+        navSlides.classList.remove(...active); 
+        navSlides.classList.add(...inactive); 
+      } else { 
+        quizDiv.classList.add('hidden'); 
+        slidesDiv.classList.remove('hidden'); 
+        navSlides.classList.add(...active); 
+        navSlides.classList.remove(...inactive); 
+        navQuiz.classList.remove(...active); 
+        navQuiz.classList.add(...inactive); 
+      } 
+      window.scrollTo({top:0,behavior:'smooth'}); 
+    }
+    
+    function toggleTheme() { 
+      const html=document.documentElement; 
+      const isDark=html.classList.contains('dark'); 
+      html.classList.toggle('dark'); 
+      const icon=isDark ? 'dark_mode' : 'light_mode'; 
+      document.querySelectorAll('#themeToggleMobile .material-symbols-outlined, #themeToggleDesktop .material-symbols-outlined').forEach(el=>el.textContent=icon); 
+      localStorage.setItem('cg-theme',isDark?'light':'dark'); 
+    }
+    
+    document.addEventListener('DOMContentLoaded',()=>{ 
+      const saved=localStorage.getItem('cg-theme'); 
+      if(saved==='dark'){ 
+        document.documentElement.classList.add('dark'); 
+        document.querySelectorAll('#themeToggleMobile .material-symbols-outlined, #themeToggleDesktop .material-symbols-outlined').forEach(el=>el.textContent='light_mode'); 
+      } 
+      buildQuestions(); 
+      buildSlides(); 
+      if(window.innerWidth>=768 && lectures.length > 0){ 
+        currentPdf=lectures[0].file; 
+        document.getElementById('pdf-frame').src=lectures[0].file; 
+        document.getElementById('pdf-title').textContent=lectures[0].name; 
+      } 
+    });
+  </script>
+</body>
+</html>
